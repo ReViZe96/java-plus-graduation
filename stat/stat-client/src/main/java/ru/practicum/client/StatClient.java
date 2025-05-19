@@ -20,7 +20,6 @@ public interface StatClient {
     String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     @PostMapping("/hit")
-
     void saveHit(@Valid @RequestBody EndpointHitDto hitDto);
 
     @GetMapping("/stats")

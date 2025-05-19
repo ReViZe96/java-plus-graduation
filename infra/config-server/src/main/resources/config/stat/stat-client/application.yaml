@@ -1,5 +1,6 @@
-application:
-  name: stat-client
+spring:
+  application:
+    name: stat-client
 
 server:
   port: 0

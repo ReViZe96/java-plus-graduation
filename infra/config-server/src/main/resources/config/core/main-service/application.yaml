@@ -1,12 +1,11 @@
-application:
-  name: main-service
-
 server:
   port: 0
 
 statsServiceId: stats-server
 
 spring:
+  application:
+    name: main-service
   jpa:
     hibernate:
       ddl-auto: none

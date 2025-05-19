@@ -1,89 +1,32 @@
 package ru.practicum.client;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriComponentsBuilder;
+import jakarta.validation.Valid;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStats;
-import ru.practicum.exception.ClientException;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component
-public class StatClient {
+@FeignClient(name = "stats-server")
+public interface StatClient {
 
-    private final String http = "http";
+    String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    private String serverUri;
-    private RestClient restClient;
+    @PostMapping("/hit")
 
-    @Autowired
-    public StatClient(@Value("${stats-server.uri:http://localhost:9090}") String serverUri) {
-        this.serverUri = serverUri;
-        this.restClient = RestClient.create();
-    }
+    void saveHit(@Valid @RequestBody EndpointHitDto hitDto);
 
-
-    public void saveHit(EndpointHitDto hitDto) {
-        String uri = UriComponentsBuilder.newInstance()
-                .uri(URI.create(serverUri))
-                .path("/hit")
-                .toUriString();
-
-        restClient.post()
-                .uri(uri)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(hitDto)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                    throw new ClientException(
-                            response.getStatusCode().value(),
-                            response.getBody().toString()
-                    );
-                })
-                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                    throw new ClientException(
-                            response.getStatusCode().value(),
-                            response.getBody().toString()
-                    );
-                })
-                .toBodilessEntity();
-    }
-
-    public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        String uriWithParams = UriComponentsBuilder.newInstance()
-                .uri(URI.create(serverUri))
-                .path("/stats")
-                .queryParam("start", start)
-                .queryParam("end", end)
-                .queryParam("uris", uris)
-                .queryParam("unique", unique)
-                .toUriString();
-
-        return restClient.get()
-                .uri(uriWithParams).retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                    throw new ClientException(
-                            response.getStatusCode().value(),
-                            response.getBody().toString()
-                    );
-                })
-                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                    throw new ClientException(
-                            response.getStatusCode().value(),
-                            response.getBody().toString()
-                    );
-                })
-                .body(new ParameterizedTypeReference<>() {
-                });
-    }
+    @GetMapping("/stats")
+    List<ViewStats> getStats(@RequestParam @DateTimeFormat(pattern = DATE_PATTERN) LocalDateTime start,
+                                    @RequestParam @DateTimeFormat(pattern = DATE_PATTERN) LocalDateTime end,
+                                    @RequestParam(required = false) List<String> uris,
+                                    @RequestParam(defaultValue = "false") Boolean unique);
 
 }

@@ -1,20 +1,19 @@
-server:
-  port: 8080
-stats-server:
-  uri: "${STAT_SERVER_URI}"
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        hibernate:
-          format_sql: true
-  sql:
-    init:
-      mode: always
-  datasource:
-    url: jdbc:postgresql://localhost:25432/ewm-db
-    driver-class-name: "org.postgresql.Driver"
-    username: "ewm-db"
-    password: "secret"
+  application:
+    name: main-service
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/

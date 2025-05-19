@@ -1,0 +1,68 @@
+application:
+  name: gateway-server
+
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      # для работы Gateway должен использовать Discovery Service
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: admin-categories
+          uri: lb://categories
+          predicates:
+            - Path=/categories/**
+          filters:
+            - PrefixPath=/admin
+        - id: public-categories
+          uri: lb://categories
+          predicates:
+            - Path=/categories/**
+        - id: admin-comments
+          uri: lb://comments
+          predicates:
+            - Path=/comments/**
+          filters:
+            - PrefixPath=/admin
+        - id: private-comments
+          uri: lb://comments
+          predicates:
+            - Path=/users/**/comments/**
+        - id: admin-compilations
+          uri: lb://compilations
+          predicates:
+            - Path=/compilations/**
+          filters:
+            - PrefixPath=/admin
+        - id: public-compilations
+          uri: lb://compilations
+          predicates:
+            - Path=/compilations/**
+        - id: admin-events
+          uri: lb://events
+          predicates:
+            - Path=/events/**
+          filters:
+            - PrefixPath=/admin
+        - id: private-events
+          uri: lb://events
+          predicates:
+            - Path=/users/**/events/**
+        - id: public-events
+          uri: lb://events
+          predicates:
+            - Path=/events/**
+        - id: admin-user
+          uri: lb://users
+          predicates:
+            - Path=/users/**
+          filters:
+            - PrefixPath=/admin
+        - id: private-request
+          uri: lb://users
+          predicates:
+            - Path=/users/**

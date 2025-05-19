@@ -1,0 +1,7 @@
+application:
+  name: stat-client
+
+server:
+  port: 0
+
+statsServiceId: stats-server

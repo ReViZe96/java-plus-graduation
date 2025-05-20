@@ -9,50 +9,10 @@ server:
           locator:
             enabled: true
         routes:
-          - id: admin-categories
+          - id: main-service
             uri: lb://main-service
             predicates:
-              - Path=/admin/categories/**
-          - id: public-categories
-            uri: lb://main-service
-            predicates:
-              - Path=/categories/**
-          - id: admin-comments
-            uri: lb://main-service
-            predicates:
-              - Path=/admin/comments/**
-          - id: private-comments
-            uri: lb://main-service
-            predicates:
-              - Path=/users/{userId}/comments/**
-          - id: admin-compilations
-            uri: lb://main-service
-            predicates:
-              - Path=/admin/compilations/**
-          - id: public-compilations
-            uri: lb://main-service
-            predicates:
-              - Path=/compilations/**
-          - id: admin-events
-            uri: lb://main-service
-            predicates:
-              - Path=/admin/events/**
-          - id: private-events
-            uri: lb://main-service
-            predicates:
-              - Path=/users/{userId}/events/**
-          - id: public-events
-            uri: lb://main-service
-            predicates:
-              - Path=/events/**
-          - id: admin-user
-            uri: lb://main-service
-            predicates:
-              - Path=/admin/users/**
-          - id: private-request
-            uri: lb://main-service
-            predicates:
-              - Path=/users/{userId}/**
+              - Path=/admin/**, /categories/**, /events/**, /compilations/**, /users/**
 
 management:
   endpoint:

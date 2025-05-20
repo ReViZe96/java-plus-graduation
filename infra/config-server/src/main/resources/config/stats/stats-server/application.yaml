@@ -1,3 +1,6 @@
+server:
+  port: 0
+
 spring:
   application:
     name: stats-server
@@ -16,6 +19,3 @@ spring:
     driver-class-name: "org.postgresql.Driver"
     username: "stats-db"
     password: "secret"
-
-server:
-  port: 0

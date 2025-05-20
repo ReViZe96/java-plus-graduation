@@ -1,67 +1,57 @@
 server:
   port: 8080
 
-spring:
-  application:
-    name: gateway-server
-  cloud:
-    gateway:
-      # для работы Gateway должен использовать Discovery Service
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: admin-categories
-          uri: lb://categories
-          predicates:
-            - Path=/categories/**
-          filters:
-            - PrefixPath=/admin
-        - id: public-categories
-          uri: lb://categories
-          predicates:
-            - Path=/categories/**
-        - id: admin-comments
-          uri: lb://comments
-          predicates:
-            - Path=/comments/**
-          filters:
-            - PrefixPath=/admin
-        - id: private-comments
-          uri: lb://comments
-          predicates:
-            - Path=/users/**/comments/**
-        - id: admin-compilations
-          uri: lb://compilations
-          predicates:
-            - Path=/compilations/**
-          filters:
-            - PrefixPath=/admin
-        - id: public-compilations
-          uri: lb://compilations
-          predicates:
-            - Path=/compilations/**
-        - id: admin-events
-          uri: lb://events
-          predicates:
-            - Path=/events/**
-          filters:
-            - PrefixPath=/admin
-        - id: private-events
-          uri: lb://events
-          predicates:
-            - Path=/users/**/events/**
-        - id: public-events
-          uri: lb://events
-          predicates:
-            - Path=/events/**
-        - id: admin-user
-          uri: lb://users
-          predicates:
-            - Path=/users/**
-          filters:
-            - PrefixPath=/admin
-        - id: private-request
-          uri: lb://users
-          predicates:
-            - Path=/users/**
+  spring:
+    application:
+      name: gateway-server
+    cloud:
+      gateway:
+        # для работы Gateway должен использовать Discovery Service
+        discovery:
+          locator:
+            enabled: true
+        routes:
+          - id: admin-categories
+            uri: lb://main-service
+            predicates:
+              - Path=/admin/categories/**
+          - id: public-categories
+            uri: lb://main-service
+            predicates:
+              - Path=/categories/**
+          - id: admin-comments
+            uri: lb://main-service
+            predicates:
+              - Path=/admin/comments/**
+          - id: private-comments
+            uri: lb://main-service
+            predicates:
+              - Path=/users/{userId}/comments/**
+          - id: admin-compilations
+            uri: lb://main-service
+            predicates:
+              - Path=/admin/compilations/**
+          - id: public-compilations
+            uri: lb://main-service
+            predicates:
+              - Path=/compilations/**
+          - id: admin-events
+            uri: lb://main-service
+            predicates:
+              - Path=/admin/events/**
+          - id: private-events
+            uri: lb://main-service
+            predicates:
+              - Path=/users/{userId}/events/**
+          - id: public-events
+            uri: lb://main-service
+            predicates:
+              - Path=/events/**
+          - id: admin-user
+            uri: lb://main-service
+            predicates:
+              - Path=/admin/users/**
+          - id: private-request
+            uri: lb://main-service
+            predicates:
+              - Path=/users/{userId}/**

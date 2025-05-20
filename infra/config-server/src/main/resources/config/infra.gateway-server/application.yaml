@@ -2,8 +2,6 @@ server:
   port: 8080
 
   spring:
-    application:
-      name: gateway-server
     cloud:
       gateway:
         # для работы Gateway должен использовать Discovery Service
@@ -55,3 +53,12 @@ server:
             uri: lb://main-service
             predicates:
               - Path=/users/{userId}/**
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: gateway

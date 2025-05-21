@@ -1,16 +1,16 @@
 services:
-#  stats-server:
-#    build: ./stat/stat-server
-#    image: ewm-stats-server
-#    container_name: ewm-stats-server
-#    ports:
-#      - "9090:9090"
-#    depends_on:
-#      - stats-db
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
-#      - SPRING_DATASOURCE_USERNAME=stats-db
-#      - SPRING_DATASOURCE_PASSWORD=secret
+  stats-server:
+    build: ./stat/stat-server
+    image: ewm-stats-server
+    container_name: ewm-stats-server
+    ports:
+      - "9090:9090"
+    depends_on:
+      - stats-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
+      - SPRING_DATASOURCE_USERNAME=stats-db
+      - SPRING_DATASOURCE_PASSWORD=secret
 
   stats-db:
     image: postgres:16.1
@@ -29,19 +29,19 @@ services:
       interval: 5s
       retries: 10
 
-#  ewm-service:
-#    build: ./main-service
-#    image: ewm-server
-#    container_name: ewm-server
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - ewm-db
-#    environment:
-#      - STAT_SERVER_URI=http://stats-server:9090
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
-#      - SPRING_DATASOURCE_USERNAME=ewm-db
-#      - SPRING_DATASOURCE_PASSWORD=secret
+  ewm-service:
+    build: ./main-service
+    image: ewm-server
+    container_name: ewm-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+    environment:
+      - STAT_SERVER_URI=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
+      - SPRING_DATASOURCE_USERNAME=ewm-db
+      - SPRING_DATASOURCE_PASSWORD=secret
 
   ewm-db:
     image: postgres:16.1

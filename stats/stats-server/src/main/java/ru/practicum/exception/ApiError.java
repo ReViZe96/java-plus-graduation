@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class ApiError {
-    String error;
-    String description;
+    private String error;
+    private String description;
 
     public ApiError(String error, String description) {
         this.error = error;

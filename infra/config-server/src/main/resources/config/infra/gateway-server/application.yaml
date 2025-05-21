@@ -12,7 +12,7 @@ spring:
         - id: main-service
           uri: lb://main-service
           predicates:
-            - Path=/admin/**, /categories/**, /events/**, /compilations/**, /users/**
+            - Path=/**
 
 server:
   port: 8080

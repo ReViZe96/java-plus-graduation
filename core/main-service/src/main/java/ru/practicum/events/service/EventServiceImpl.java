@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.client.StatClient;
+import ru.practicum.client.UserClient;
 import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.enums.CommentStatus;
 import ru.practicum.comment.mapper.CommentMapper;
@@ -38,8 +39,7 @@ import ru.practicum.events.repository.LocationRepository;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
-import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
+import ru.practicum.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final LocationRepository locationRepository;
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
+    private final UserClient userClient;
     private final RequestRepository requestRepository;
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
@@ -191,7 +191,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDto> privateUserEvents(Long userId, int from, int size) {
         Pageable pageable = PageRequest.of(from, size);
-        List<EventDto> list = eventRepository.findAllByInitiator_Id(userId, pageable).stream()
+        List<EventDto> list = eventRepository.findAllByInitiatorId(userId, pageable).stream()
                 .map(eventMapper::toDto)
                 .toList();
         return addAdvancedDataToList(list);
@@ -204,9 +204,13 @@ public class EventServiceImpl implements EventService {
                     .format("Field: eventDate. Error: должно содержать дату, которая еще не наступила. Value: %s",
                             eventCreateDto.getEventDate()));
         }
-        User initiator = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        List<UserDto> initiator = userClient.getUsers(List.of(userId), 0, 1);
+        if (initiator.isEmpty()) {
+            throw  new NotFoundException("User not found");
+        }
+
         Event event = eventMapper.fromDto(eventCreateDto);
-        event.setInitiator(initiator);
+        event.setInitiatorId(initiator.getFirst().getId());
         Category category = categoryRepository.findById(eventCreateDto.getCategory())
                 .orElseThrow(() -> new NotFoundException("Category not found"));
         event.setCategory(category);
@@ -219,14 +223,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto privateGetUserEvent(Long userId, Long eventId) {
-        Event event = eventRepository.findByIdAndInitiator_Id(eventId, userId)
+        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id %s not found", eventId)));
         return addAdvancedData(eventMapper.toDto(event));
     }
 
     @Override
     public EventDto privateUpdateUserEvent(Long userId, Long eventId, EventUpdateDto eventUpdateDto) {
-        Event event = eventRepository.findByIdAndInitiator_Id(eventId, userId)
+        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id %s not found", eventId)));
         if (event.getState().equals(EventState.PUBLISHED) || event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new OperationForbiddenException("Only pending or canceled events can be changed");

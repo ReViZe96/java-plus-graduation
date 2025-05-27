@@ -16,6 +16,7 @@
         <module>request-service</module>
         <module>category-service</module>
         <module>comment-service</module>
+        <module>compilation-service</module>
     </modules>
 
     <properties>

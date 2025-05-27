@@ -1,0 +1,31 @@
+package ru.practicum.service;
+
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.practicum.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.dto.EventRequestStatusUpdateResult;
+import ru.practicum.dto.ParticipationRequestDto;
+
+import java.util.List;
+
+public interface RequestService {
+
+    List<ParticipationRequestDto> getUserRequests(Long userId, HttpServletRequest request);
+
+    ParticipationRequestDto addParticipationRequest(Long userId, Long eventId);
+
+    ParticipationRequestDto cancelRequest(Long userId, Long requestId);
+
+    List<ParticipationRequestDto> getEventParticipants(Long userId, Long eventId, HttpServletRequest request);
+
+    EventRequestStatusUpdateResult changeRequestStatus(Long userId, Long eventId,
+                                                       EventRequestStatusUpdateRequest eventStatusUpdate,
+                                                       HttpServletRequest request);
+
+    ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(Long authorId, Long eventId, String requestStatus);
+
+    Long countRequestsByEventIdAndStatus(Long eventId, String requestStatus);
+
+    List<ParticipationRequestDto> findAllByEventIdInAndStatus(List<Long> idsList, String requestStatus);
+}

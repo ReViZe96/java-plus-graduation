@@ -3,7 +3,7 @@ package ru.practicum.client.fallback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.client.UserClient;
-import ru.practicum.user.dto.UserDto;
+import ru.practicum.dto.users.UserDto;
 
 import java.util.Collections;
 import java.util.List;

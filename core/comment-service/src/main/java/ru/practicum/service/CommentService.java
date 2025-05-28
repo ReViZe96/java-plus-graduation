@@ -19,7 +19,7 @@ public interface CommentService {
 
     List<CommentDto> adminPendigCommentList();
 
-    List<CommentDto> findByEventIdAndStatus(Long eventId, String commentStatus);
+    List<CommentDto> findByEventIdAndStatus(Long eventId, CommentStatus commentStatus);
 
-    List<CommentDto> findAllByEventIdInAndStatus(List<Long> idsList, String commentStatus);
+    List<CommentDto> findAllByEventIdInAndStatus(List<Long> idsList, CommentStatus commentStatus);
 }

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.EventRequestStatusUpdateResult;
 import ru.practicum.dto.ParticipationRequestDto;
+import ru.practicum.model.RequestStatus;
 
 import java.util.List;
 
@@ -23,9 +24,9 @@ public interface RequestService {
                                                        EventRequestStatusUpdateRequest eventStatusUpdate,
                                                        HttpServletRequest request);
 
-    ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(Long authorId, Long eventId, String requestStatus);
+    ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(Long authorId, Long eventId, RequestStatus requestStatus);
 
-    Long countRequestsByEventIdAndStatus(Long eventId, String requestStatus);
+    Long countRequestsByEventIdAndStatus(Long eventId, RequestStatus requestStatus);
 
-    List<ParticipationRequestDto> findAllByEventIdInAndStatus(List<Long> idsList, String requestStatus);
+    List<ParticipationRequestDto> findAllByEventIdInAndStatus(List<Long> idsList, RequestStatus requestStatus);
 }

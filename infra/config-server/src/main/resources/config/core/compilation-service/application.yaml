@@ -17,7 +17,7 @@ spring:
     init:
       mode: always
   datasource:
-    url: jdbc:postgresql://localhost:66432/compilation-db
+    url: jdbc:postgresql://localhost:65433/compilation-db
     driver-class-name: "org.postgresql.Driver"
     username: "compilation-db"
     password: "compilation_pw"

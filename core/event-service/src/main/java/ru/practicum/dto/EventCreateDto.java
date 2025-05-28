@@ -7,6 +7,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.dto.events.LocationDto;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -21,7 +23,6 @@ public class EventCreateDto {
     @NotBlank
     @Size(min = 20, max = 7000)
     private String description;
-    @NotNull
     private Long categoryId;
     @NotNull
     @DateTimeFormat(pattern = DATE_PATTERN)

@@ -29,7 +29,7 @@ import java.util.List;
 public class PublicEventController {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    private static final String MAIN_SERVICE = "ewm-main-service";
+    private static final String MAIN_SERVICE = "ewm-common-module";
 
     private final EventService eventService;
     private final StatClient statClient;

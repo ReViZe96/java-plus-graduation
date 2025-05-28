@@ -17,7 +17,7 @@ public interface EventMapper {
     @Mapping(target = "confirmedRequests", ignore = true)
     EventDto toDto(Event event);
 
-    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "categoryId", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "initiatorId", ignore = true)
     @Mapping(target = "state", ignore = true)

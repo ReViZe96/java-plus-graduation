@@ -63,7 +63,7 @@ public class RequestServiceImpl implements RequestService {
         request.setRequesterId(userClient.getUsers(List.of(userId), 0, 1).get(0).getId());
         request.setEventId(events.get(0).getId());
 
-        Long confirmedRequestsAmount = requestRepository.countRequestsByEventIdAndStatus(eventId, "CONFIRMED");
+        Long confirmedRequestsAmount = requestRepository.countRequestsByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         if (events.get(0).getParticipantLimit() <= confirmedRequestsAmount && events.get(0).getParticipantLimit() != 0) {
             throw new ParticipantLimitException(String.format("Participant limit for event with id %s id exceeded", eventId));
         }
@@ -133,7 +133,7 @@ public class RequestServiceImpl implements RequestService {
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
 
         long confirmedRequestsAmount;
-        confirmedRequestsAmount = requestRepository.countRequestsByEventIdAndStatus(eventId, "CONFIRMED");
+        confirmedRequestsAmount = requestRepository.countRequestsByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         if (confirmedRequestsAmount >= participantLimit) {
             throw new ParticipantLimitException(String.format("Participant limit for event with id %s id exceeded", eventId));
         }
@@ -167,18 +167,18 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(Long authorId, Long eventId, String requestStatus) {
+    public ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(Long authorId, Long eventId, RequestStatus requestStatus) {
         return requestRepository.findByRequesterIdAndEventIdAndStatus(authorId, eventId, requestStatus)
                 .map(requestMapper::requestToParticipationRequestDto).get();
     }
 
     @Override
-    public Long countRequestsByEventIdAndStatus(Long eventId, String requestStatus) {
+    public Long countRequestsByEventIdAndStatus(Long eventId, RequestStatus requestStatus) {
         return requestRepository.countRequestsByEventIdAndStatus(eventId, requestStatus);
     }
 
     @Override
-    public List<ParticipationRequestDto> findAllByEventIdInAndStatus(List<Long> idsList, String requestStatus) {
+    public List<ParticipationRequestDto> findAllByEventIdInAndStatus(List<Long> idsList, RequestStatus requestStatus) {
         return requestRepository.findAllByEventIdInAndStatus(idsList, requestStatus).stream()
                 .map(requestMapper::requestToParticipationRequestDto)
                 .toList();

@@ -9,6 +9,7 @@ import ru.practicum.client.UserClient;
 import ru.practicum.dto.AdminUpdateCommentStatusDto;
 import ru.practicum.dto.CommentDto;
 import ru.practicum.dto.NewCommentDto;
+import ru.practicum.dto.enums.RequestStatus;
 import ru.practicum.dto.events.EventDto;
 import ru.practicum.dto.users.UserDto;
 import ru.practicum.enums.AdminUpdateCommentStatusAction;
@@ -50,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
         if (!event.get(0).getEventState().equals("PUBLISHED")) {
             throw new OperationForbiddenException("Мероприятие должно быть опубликовано");
         }
-        if (requestClient.findByRequesterIdAndEventIdAndStatus(authorId, eventId, "CONFIRMED") == null) {
+        if (requestClient.findByRequesterIdAndEventIdAndStatus(authorId, eventId, RequestStatus.CONFIRMED) == null) {
             throw new OperationForbiddenException("Комментарии может оставлять только подтвержденный участник мероприятия");
         }
         Comment comment = commentMapper.toComment(newCommentDto, author.getFirst().getId(), event.get(0).getId());
@@ -111,13 +112,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentDto> findByEventIdAndStatus(Long eventId, String commentStatus) {
+    public List<CommentDto> findByEventIdAndStatus(Long eventId, CommentStatus commentStatus) {
         return commentRepository.findByEventIdAndStatus(eventId, commentStatus).stream()
                 .map(commentMapper::toDto).toList();
     }
 
     @Override
-    public List<CommentDto> findAllByEventIdInAndStatus(List<Long> idsList, String commentStatus) {
+    public List<CommentDto> findAllByEventIdInAndStatus(List<Long> idsList, CommentStatus commentStatus) {
         return commentRepository.findAllByEventIdInAndStatus(idsList, commentStatus).stream()
                 .map(commentMapper::toDto).toList();
     }

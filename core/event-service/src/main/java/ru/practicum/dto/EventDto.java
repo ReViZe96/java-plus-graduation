@@ -2,6 +2,10 @@ package ru.practicum.dto;
 
 import lombok.Data;
 
+import ru.practicum.dto.categories.CategoryDto;
+import ru.practicum.dto.comments.CommentDto;
+import ru.practicum.dto.events.LocationDto;
+import ru.practicum.dto.users.UserShortDto;
 import ru.practicum.model.EventState;
 
 import java.util.List;

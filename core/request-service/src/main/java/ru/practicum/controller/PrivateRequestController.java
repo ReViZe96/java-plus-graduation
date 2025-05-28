@@ -100,30 +100,21 @@ public class PrivateRequestController {
     @GetMapping("/events/{eventId}/requests/byStatus/{requestStatus}")
     public ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(@PathVariable Long userId,
                                                                         @PathVariable Long eventId,
-                                                                        @PathVariable String requestStatus) {
-        if (!Arrays.stream(RequestStatus.values()).map(Enum::toString).toList().contains(requestStatus)) {
-            throw new ValidationException("Передан некорректный статус для заявки на участие");
-        }
+                                                                        @PathVariable RequestStatus requestStatus) {
         return requestService.findByRequesterIdAndEventIdAndStatus(userId, eventId, requestStatus);
     }
 
     @GetMapping("/events/{eventId}/requestsCount/byStatus/{requestStatus}")
     public Long countRequestsByEventIdAndStatus(@PathVariable Long userId,
                                                 @PathVariable Long eventId,
-                                                @PathVariable String requestStatus) {
-        if (!Arrays.stream(RequestStatus.values()).map(Enum::toString).toList().contains(requestStatus)) {
-            throw new ValidationException("Передан некорректный статус для заявки на участие");
-        }
+                                                @PathVariable RequestStatus requestStatus) {
         return requestService.countRequestsByEventIdAndStatus(eventId, requestStatus);
     }
 
     @GetMapping("/events/requests/byStatus/{requestStatus}")
     public List<ParticipationRequestDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList,
                                                      @PathVariable Long userId,
-                                                     @PathVariable String requestStatus) {
-        if (!Arrays.stream(RequestStatus.values()).map(Enum::toString).toList().contains(requestStatus)) {
-            throw new ValidationException("Передан некорректный статус для заявки на участие");
-        }
+                                                     @PathVariable RequestStatus requestStatus) {
         return requestService.findAllByEventIdInAndStatus(idsList, requestStatus);
     }
 

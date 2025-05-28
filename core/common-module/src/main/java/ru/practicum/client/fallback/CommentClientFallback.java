@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.client.CommentClient;
 import ru.practicum.dto.comments.CommentDto;
+import ru.practicum.dto.enums.CommentStatus;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,14 +17,14 @@ public class CommentClientFallback implements CommentClient {
 
 
     @Override
-    public List<CommentDto> findByEventIdAndStatus(Long eventId, String commentStatus) {
+    public List<CommentDto> findByEventIdAndStatus(Long eventId, CommentStatus commentStatus) {
         log.warn(SERVICE_UNAVAILABLE + "невозможно получить комментарии со статусом {} для события с id = {} .",
                 commentStatus, eventId);
         return Collections.emptyList();
     }
 
     @Override
-    public List<CommentDto> findAllByEventIdInAndStatus(List<Long> idsList, String commentStatus) {
+    public List<CommentDto> findAllByEventIdInAndStatus(List<Long> idsList, CommentStatus commentStatus) {
         log.warn(SERVICE_UNAVAILABLE + "невозможно получить комментарии со статусом {} для указанных событий.",
                 commentStatus);
         return Collections.emptyList();

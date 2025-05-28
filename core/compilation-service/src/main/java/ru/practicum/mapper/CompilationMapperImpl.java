@@ -4,22 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.CompilationDto;
 import ru.practicum.model.Compilation;
-import ru.practicum.events.mapper.EventMapper;
 
 
 @RequiredArgsConstructor
 @Component
 public final class CompilationMapperImpl {
-    private final EventMapper eventMapper;
 
     public CompilationDto toDto(Compilation compilation) {
         CompilationDto dto = new CompilationDto();
         dto.setId(compilation.getId());
         dto.setPinned(compilation.isPinned());
         dto.setTitle(compilation.getTitle());
-        dto.setEvents(compilation.getEvents().stream().map(eventMapper::toEventShortDto).toList());
+        dto.setEventIds(compilation.getEvents());
         return dto;
     }
-
 
 }

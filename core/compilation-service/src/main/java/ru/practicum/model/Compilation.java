@@ -19,11 +19,11 @@ public class Compilation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "compilations_events",
-            joinColumns = @JoinColumn(name = "compilation_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id")
-    )
+    @ElementCollection(targetClass=Long.class)
+    @CollectionTable(
+            name="compilations_events",
+            joinColumns=@JoinColumn(name="compilation_id"))
+    @Column(name="event_id")
     private List<Long> events = new ArrayList<>();
     private boolean pinned;
     private String title;

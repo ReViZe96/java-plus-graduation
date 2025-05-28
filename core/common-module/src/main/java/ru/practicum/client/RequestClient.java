@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.client.fallback.RequestClientFallback;
+import ru.practicum.dto.enums.RequestStatus;
 import ru.practicum.dto.requests.ParticipationRequestDto;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface RequestClient {
     @GetMapping("/users/{userId}/events/{eventId}/requests/byStatus/{requestStatus}")
     ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(@PathVariable Long userId,
                                                                         @PathVariable Long eventId,
-                                                                        @PathVariable String requestStatus);
+                                                                        @PathVariable RequestStatus requestStatus);
 
     /**
      * Получить количество запросов на участие в конкретном событии с конкретным статусом.
@@ -35,7 +36,7 @@ public interface RequestClient {
     @GetMapping("/users/{userId}/events/{eventId}/requestsCount/byStatus/{requestStatus}")
     Long countRequestsByEventIdAndStatus(@PathVariable Long userId,
                                          @PathVariable Long eventId,
-                                         @PathVariable String requestStatus);
+                                         @PathVariable RequestStatus requestStatus);
 
     /**
      * Получить все запросы на участие в конкретных событиях с конкретным статусом.
@@ -47,6 +48,6 @@ public interface RequestClient {
     @GetMapping("/users/{userId}/events/requests/byStatus/{requestStatus}")
     List<ParticipationRequestDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList,
                                                                      @PathVariable Long userId,
-                                                                     @PathVariable String requestStatus);
+                                                                     @PathVariable RequestStatus requestStatus);
 
 }

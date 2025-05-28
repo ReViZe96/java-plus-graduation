@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import ru.practicum.client.*;
 import ru.practicum.dto.*;
 import ru.practicum.dto.categories.CategoryDto;
+import ru.practicum.dto.comments.CommentDto;
+import ru.practicum.dto.enums.CommentStatus;
+import ru.practicum.dto.enums.RequestStatus;
+import ru.practicum.dto.events.LocationDto;
 import ru.practicum.dto.requests.ParticipationRequestDto;
 import ru.practicum.dto.users.UserDto;
 import ru.practicum.exception.NotFoundException;
@@ -274,21 +278,21 @@ public class EventServiceImpl implements EventService {
                 .stream().map(ViewStats::getHits).reduce(0L, Long::sum);
         eventDto.setViews(views);
 
-        eventDto.setConfirmedRequests(requestClient.countRequestsByEventIdAndStatus(0L, eventDto.getId(), "CONFIRMED"));
+        eventDto.setConfirmedRequests(requestClient.countRequestsByEventIdAndStatus(0L, eventDto.getId(), RequestStatus.CONFIRMED));
 
-        List<CommentDto> comments = commentClient.findByEventIdAndStatus(eventDto.getId(), "PUBLISHED");
+        List<CommentDto> comments = commentClient.findByEventIdAndStatus(eventDto.getId(), CommentStatus.PUBLISHED);
         eventDto.setComments(comments);
 
         return eventDto;
     }
 
     private boolean isEventAvailable(Event event) {
-        Long confirmedRequestsAmount = requestClient.countRequestsByEventIdAndStatus(0L, event.getId(), "CONFIRMED");
+        Long confirmedRequestsAmount = requestClient.countRequestsByEventIdAndStatus(0L, event.getId(), RequestStatus.CONFIRMED);
         return event.getParticipantLimit() > confirmedRequestsAmount;
     }
 
     private HashMap<Long, Long> getEventConfirmedRequestsCount(List<Long> idsList) {
-        List<ParticipationRequestDto> requests = requestClient.findAllByEventIdInAndStatus(idsList, 0L,"CONFIRMED");
+        List<ParticipationRequestDto> requests = requestClient.findAllByEventIdInAndStatus(idsList, 0L,RequestStatus.CONFIRMED);
         HashMap<Long, Long> confirmedRequestMap = new HashMap<>();
         for (ParticipationRequestDto request : requests) {
             if (confirmedRequestMap.containsKey(request.getEventId())) {
@@ -306,7 +310,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private HashMap<Long, List<CommentDto>> getEventComments(List<Long> idsList) {
-        List<CommentDto> comments = commentClient.findAllByEventIdInAndStatus(idsList, "PUBLISHED");
+        List<CommentDto> comments = commentClient.findAllByEventIdInAndStatus(idsList, CommentStatus.PUBLISHED);
         HashMap<Long, List<CommentDto>> commentsMap = new HashMap<>();
         for (CommentDto comment : comments) {
             if (!commentsMap.containsKey(comment.getEventId())) {

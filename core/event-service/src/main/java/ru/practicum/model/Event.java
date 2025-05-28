@@ -45,8 +45,7 @@ public class Event {
     private int participantLimit;
 
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @Column(name = "category_id")
     private Long categoryId;
 
     @ManyToOne

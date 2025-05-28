@@ -41,18 +41,12 @@ public class CommentPrivateController {
     }
 
     @GetMapping("/byEventId/{eventId}/andCommentStatus/{commentStatus}")
-    public List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @PathVariable String commentStatus) {
-        if (!Arrays.stream(CommentStatus.values()).map(Enum::toString).toList().contains(commentStatus)) {
-            throw new ValidationException("Передан некорректный статус комментария");
-        }
+    public List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @PathVariable CommentStatus commentStatus) {
         return commentService.findByEventIdAndStatus(eventId, commentStatus);
     }
 
     @GetMapping("/all//byEventIdsAndCommentStatus/{commentStatus}")
-    List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @PathVariable String commentStatus) {
-        if (!Arrays.stream(CommentStatus.values()).map(Enum::toString).toList().contains(commentStatus)) {
-            throw new ValidationException("Передан некорректный статус комментария");
-        }
+    List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @PathVariable CommentStatus commentStatus) {
         return commentService.findAllByEventIdInAndStatus(idsList, commentStatus);
     }
 

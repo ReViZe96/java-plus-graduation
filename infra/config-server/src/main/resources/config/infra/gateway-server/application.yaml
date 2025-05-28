@@ -13,8 +13,24 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/admin/users/**
-        - id: main-service
-          uri: lb://main-service
+        - id: request_service
+          uri: lb://request-service
+          predicates:
+            - Path=/users/{userId}/events/{eventId}/requests/**,/users/{userId}/requests/**
+        - id: category_service
+          uri: lb://category-service
+          predicates:
+            - Path=/admin/categories/**,/categories/**
+        - id: comment_service
+          uri: lb://comment-service
+          predicates:
+            - Path=admin/comments/**,/users/{userId}/comments/**
+        - id: compilation_service
+          uri: lb://compilation-service
+          predicates:
+            - Path=/admin/compilations/**,/compilations/**
+        - id: event_service
+          uri: lb://event-service
           predicates:
             - Path=/**
 

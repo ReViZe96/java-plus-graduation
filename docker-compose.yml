@@ -184,37 +184,6 @@ services:
       interval: 5s
       retries: 10
 
-#  compilation-service:
-#    build: ./compilation-service
-#    image: compilation-service
-#    container_name: compilation-service
-#    ports:
-#      - "8085:8085"
-#    depends_on:
-#      - compilation-db
-#    environment:
-#      - STAT_SERVER_URI=http://stats-server:9090
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://compilation-db:5432/compilation-db
-#      - SPRING_DATASOURCE_USERNAME=compilation-db
-#      - SPRING_DATASOURCE_PASSWORD=compilation_pw
-
-  compilation-db:
-    image: postgres:16.1
-    container_name: compilation-db
-    ports:
-      - "65433:5432"
-    volumes:
-      - compilationData:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=compilation-db
-      - POSTGRES_USER=compilation-db
-      - POSTGRES_PASSWORD=compilation_pw
-    healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
-      interval: 5s
-      retries: 10
-
 volumes:
   statData:
     driver: local

@@ -25,10 +25,6 @@ spring:
           uri: lb://comment-service
           predicates:
             - Path=admin/comments/**,/users/{userId}/comments/**
-        - id: compilation_service
-          uri: lb://compilation-service
-          predicates:
-            - Path=/admin/compilations/**,/compilations/**
         - id: event_service
           uri: lb://event-service
           predicates:

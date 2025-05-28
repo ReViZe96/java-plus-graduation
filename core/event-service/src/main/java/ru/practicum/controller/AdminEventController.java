@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.dto.EventAdminUpdateDto;
 import ru.practicum.dto.EventDto;
 import ru.practicum.dto.SearchEventsParam;
-import ru.practicum.model.EventState;
+import ru.practicum.dto.enums.EventState;
 import ru.practicum.service.EventService;
 
 import java.time.LocalDateTime;

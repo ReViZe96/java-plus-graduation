@@ -3,6 +3,7 @@ package ru.practicum.dto.events;
 import lombok.Data;
 import ru.practicum.dto.categories.CategoryDto;
 import ru.practicum.dto.comments.CommentDto;
+import ru.practicum.dto.enums.EventState;
 import ru.practicum.dto.users.UserShortDto;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class EventDto {
     private CategoryDto category;
     private LocationDto location;
 
-    private String eventState;
+    private EventState state;
     private UserShortDto initiator;
 
     private String eventDate;

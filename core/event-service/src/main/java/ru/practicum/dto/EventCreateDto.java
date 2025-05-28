@@ -23,7 +23,7 @@ public class EventCreateDto {
     @NotBlank
     @Size(min = 20, max = 7000)
     private String description;
-    private Long categoryId;
+    private Long category;
     @NotNull
     @DateTimeFormat(pattern = DATE_PATTERN)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

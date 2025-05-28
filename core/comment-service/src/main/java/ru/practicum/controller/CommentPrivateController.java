@@ -1,7 +1,6 @@
 package ru.practicum.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +9,6 @@ import ru.practicum.dto.NewCommentDto;
 import ru.practicum.enums.CommentStatus;
 import ru.practicum.service.CommentService;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -38,16 +36,6 @@ public class CommentPrivateController {
     public void deleteComment(@PathVariable("userId") long userId,
                                     @PathVariable("commentId") long commentId) {
         commentService.deleteComment(userId, commentId);
-    }
-
-    @GetMapping("/byEventId/{eventId}/andCommentStatus/{commentStatus}")
-    public List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @PathVariable CommentStatus commentStatus) {
-        return commentService.findByEventIdAndStatus(eventId, commentStatus);
-    }
-
-    @GetMapping("/all//byEventIdsAndCommentStatus/{commentStatus}")
-    List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @PathVariable CommentStatus commentStatus) {
-        return commentService.findAllByEventIdInAndStatus(idsList, commentStatus);
     }
 
 }

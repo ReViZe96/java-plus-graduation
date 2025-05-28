@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.dto.enums.EventState;
 
 import java.time.LocalDateTime;
 

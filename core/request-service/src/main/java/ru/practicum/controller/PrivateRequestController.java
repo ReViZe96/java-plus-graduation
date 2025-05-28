@@ -1,7 +1,6 @@
 package ru.practicum.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +10,6 @@ import ru.practicum.dto.ParticipationRequestDto;
 import ru.practicum.model.RequestStatus;
 import ru.practicum.service.RequestService;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController

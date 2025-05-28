@@ -4,7 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import ru.practicum.model.Event;
-import ru.practicum.model.EventState;
+import ru.practicum.dto.enums.EventState;
 
 import java.util.List;
 import java.util.Optional;

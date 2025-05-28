@@ -21,17 +21,14 @@ import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.LocationMapper;
 import ru.practicum.model.Event;
 import ru.practicum.model.EventSort;
-import ru.practicum.model.EventState;
+import ru.practicum.dto.enums.EventState;
 import ru.practicum.model.Location;
 import ru.practicum.predicates.EventPredicates;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.LocationRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -199,12 +196,12 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventMapper.fromDto(eventCreateDto);
         event.setInitiatorId(initiator.getFirst().getId());
-        CategoryDto category = categoryClient.getCategoryById(eventCreateDto.getCategoryId());
+        CategoryDto category = categoryClient.getCategoryById(eventCreateDto.getCategory());
         if (category == null) {
             throw new NotFoundException("Category not found");
         }
 
-        event.setCategoryId(category.getId());
+        event.setCategoryId(eventCreateDto.getCategory());
         locationRepository.save(event.getLocation());
         event.setCreatedOn(LocalDateTime.now());
         event.setState(EventState.PENDING);
@@ -262,7 +259,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto findByIdAndInitiatorId(Long eventId, Long userId) {
-        return eventRepository.findByIdAndInitiatorId(eventId, userId).map(eventMapper::toDto).get();
+        Optional<EventDto> result = eventRepository.findByIdAndInitiatorId(eventId, userId).map(eventMapper::toDto);
+        return result.orElse(null);
     }
 
     @Override

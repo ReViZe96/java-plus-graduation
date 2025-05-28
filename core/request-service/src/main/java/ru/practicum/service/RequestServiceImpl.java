@@ -8,17 +8,19 @@ import ru.practicum.client.UserClient;
 import ru.practicum.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.EventRequestStatusUpdateResult;
 import ru.practicum.dto.ParticipationRequestDto;
+import ru.practicum.dto.enums.EventState;
 import ru.practicum.dto.events.EventDto;
+import ru.practicum.dto.users.UserDto;
 import ru.practicum.exception.*;
 import ru.practicum.mapper.RequestMapper;
 import ru.practicum.model.Request;
 import ru.practicum.model.RequestStatus;
 import ru.practicum.repository.RequestRepository;
-import ru.practicum.dto.users.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +58,7 @@ public class RequestServiceImpl implements RequestService {
         if (events.isEmpty()) {
             throw new NotFoundException(String.format("Event with id %s not found", eventId));
         }
-        if (!events.get(0).getEventState().equals("PUBLISHED")) {
+        if (!EventState.PUBLISHED.equals(events.get(0).getState())) {
             throw new NotPublishEventException(String.format("Event with id %s is not published", eventId));
         }
         Request request = new Request();
@@ -168,8 +170,9 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(Long authorId, Long eventId, RequestStatus requestStatus) {
-        return requestRepository.findByRequesterIdAndEventIdAndStatus(authorId, eventId, requestStatus)
-                .map(requestMapper::requestToParticipationRequestDto).get();
+        Optional<ParticipationRequestDto> result = requestRepository.findByRequesterIdAndEventIdAndStatus(authorId, eventId, requestStatus)
+                .map(requestMapper::requestToParticipationRequestDto);
+        return result.orElse(null);
     }
 
     @Override

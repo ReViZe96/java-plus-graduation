@@ -9,6 +9,7 @@ import ru.practicum.client.UserClient;
 import ru.practicum.dto.AdminUpdateCommentStatusDto;
 import ru.practicum.dto.CommentDto;
 import ru.practicum.dto.NewCommentDto;
+import ru.practicum.dto.enums.EventState;
 import ru.practicum.dto.enums.RequestStatus;
 import ru.practicum.dto.events.EventDto;
 import ru.practicum.dto.users.UserDto;
@@ -48,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
         if (authorId == event.get(0).getInitiator().getId()) {
             throw new OperationForbiddenException("Инициатор мероприятия не может оставлять комментарии к нему");
         }
-        if (!event.get(0).getEventState().equals("PUBLISHED")) {
+        if (!EventState.PUBLISHED.equals(event.get(0).getState())) {
             throw new OperationForbiddenException("Мероприятие должно быть опубликовано");
         }
         if (requestClient.findByRequesterIdAndEventIdAndStatus(authorId, eventId, RequestStatus.CONFIRMED) == null) {

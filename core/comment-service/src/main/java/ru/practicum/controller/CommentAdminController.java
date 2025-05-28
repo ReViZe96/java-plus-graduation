@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.AdminUpdateCommentStatusDto;
 import ru.practicum.dto.CommentDto;
+import ru.practicum.enums.CommentStatus;
 import ru.practicum.service.CommentService;
 
 import java.util.List;
@@ -24,6 +25,16 @@ public class CommentAdminController {
     public CommentDto adminUpdateCommentStatus(@PathVariable("commentId") Long commentId,
                                                @Valid @RequestBody AdminUpdateCommentStatusDto dto) {
         return commentService.adminUpdateCommentStatus(commentId, dto);
+    }
+
+    @GetMapping("/byEventId/{eventId}/andCommentStatus/{commentStatus}")
+    public List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @PathVariable CommentStatus commentStatus) {
+        return commentService.findByEventIdAndStatus(eventId, commentStatus);
+    }
+
+    @GetMapping("/all/byEventIdsAndCommentStatus/{commentStatus}")
+    List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @PathVariable CommentStatus commentStatus) {
+        return commentService.findAllByEventIdInAndStatus(idsList, commentStatus);
     }
 
 }

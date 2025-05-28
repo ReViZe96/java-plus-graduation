@@ -3,7 +3,7 @@ package ru.practicum.predicates;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import ru.practicum.dto.SearchEventsParam;
-import ru.practicum.model.EventState;
+import ru.practicum.dto.enums.EventState;
 import ru.practicum.model.QEvent;
 
 import java.time.LocalDateTime;

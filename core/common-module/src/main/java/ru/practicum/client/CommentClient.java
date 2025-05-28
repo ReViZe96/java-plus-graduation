@@ -19,7 +19,7 @@ public interface CommentClient {
      * @param commentStatus статус комментариев
      * @return список комментариев.
      */
-    @GetMapping("/users/{userId}/comments/byEventId/{eventId}/andCommentStatus/{commentStatus}")
+    @GetMapping("/admin/comments/byEventId/{eventId}/andCommentStatus/{commentStatus}")
     List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @PathVariable CommentStatus commentStatus);
 
     /**
@@ -28,7 +28,7 @@ public interface CommentClient {
      * @param commentStatus статус комментариев
      * @return список комментариев.
      */
-    @GetMapping("/users/{userId}/comments/all//byEventIdsAndCommentStatus/{commentStatus}")
+    @GetMapping("admin/comments/all/byEventIdsAndCommentStatus/{commentStatus}")
     List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @PathVariable CommentStatus commentStatus);
 
 }

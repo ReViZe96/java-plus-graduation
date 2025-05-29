@@ -246,7 +246,6 @@ public class EventServiceImpl implements EventService {
         event = eventRepository.save(event);
         EventDto eventDto = eventMapper.toDto(event);
         CategoryDto category = categoryClient.getCategoryById(event.getCategoryId());
-        category.setId(event.getCategoryId());
         eventDto.setCategory(category);
         UserDto initiator = userClient.getUsers(List.of(event.getInitiatorId()), 0, 1).getFirst();
         UserShortDto initiatorShortInfo = new UserShortDto(initiator.getId(), initiator.getName());

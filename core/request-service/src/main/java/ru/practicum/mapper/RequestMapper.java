@@ -1,7 +1,7 @@
 package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.dto.ParticipationRequestDto;
+import ru.practicum.dto.requests.ParticipationRequestDto;
 import ru.practicum.model.Request;
 
 import java.time.format.DateTimeFormatter;

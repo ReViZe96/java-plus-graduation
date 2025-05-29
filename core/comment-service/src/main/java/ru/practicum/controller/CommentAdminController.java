@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.AdminUpdateCommentStatusDto;
-import ru.practicum.dto.CommentDto;
+import ru.practicum.dto.comments.CommentDto;
 import ru.practicum.enums.CommentStatus;
 import ru.practicum.service.CommentService;
 

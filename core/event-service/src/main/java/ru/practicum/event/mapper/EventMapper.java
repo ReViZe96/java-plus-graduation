@@ -2,8 +2,8 @@ package ru.practicum.event.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import ru.practicum.dto.events.EventDto;
 import ru.practicum.event.dto.EventCreateDto;
-import ru.practicum.event.dto.EventDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
 

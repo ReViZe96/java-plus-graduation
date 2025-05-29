@@ -9,9 +9,9 @@ public class ParticipationRequestDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
-    private Long eventId;
+    private Long event;
 
-    private Long requesterId;
+    private Long requester;
 
     private String created;
 

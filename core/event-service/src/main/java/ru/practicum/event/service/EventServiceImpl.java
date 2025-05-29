@@ -7,26 +7,28 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.client.*;
-import ru.practicum.dto.*;
+import ru.practicum.dto.ViewStats;
 import ru.practicum.dto.categories.CategoryDto;
 import ru.practicum.dto.comments.CommentDto;
 import ru.practicum.dto.enums.CommentStatus;
+import ru.practicum.dto.enums.EventState;
 import ru.practicum.dto.enums.RequestStatus;
+import ru.practicum.dto.events.EventDto;
 import ru.practicum.dto.events.LocationDto;
 import ru.practicum.dto.requests.ParticipationRequestDto;
 import ru.practicum.dto.users.UserDto;
+import ru.practicum.dto.users.UserShortDto;
 import ru.practicum.event.dto.*;
-import ru.practicum.exception.NotFoundException;
-import ru.practicum.exception.OperationForbiddenException;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.mapper.LocationMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventSort;
-import ru.practicum.dto.enums.EventState;
 import ru.practicum.event.model.Location;
 import ru.practicum.event.predicates.EventPredicates;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
+import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.OperationForbiddenException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -242,7 +244,14 @@ public class EventServiceImpl implements EventService {
             }
         }
         event = eventRepository.save(event);
-        return addAdvancedData(eventMapper.toDto(event));
+        EventDto eventDto = eventMapper.toDto(event);
+        CategoryDto category = categoryClient.getCategoryById(event.getCategoryId());
+        category.setId(event.getCategoryId());
+        eventDto.setCategory(category);
+        UserDto initiator = userClient.getUsers(List.of(event.getInitiatorId()), 0, 1).getFirst();
+        UserShortDto initiatorShortInfo = new UserShortDto(initiator.getId(), initiator.getName());
+        eventDto.setInitiator(initiatorShortInfo);
+        return addAdvancedData(eventDto);
     }
 
     @Override
@@ -294,10 +303,10 @@ public class EventServiceImpl implements EventService {
         List<ParticipationRequestDto> requests = requestClient.findAllByEventIdInAndStatus(idsList, 0L,RequestStatus.CONFIRMED);
         HashMap<Long, Long> confirmedRequestMap = new HashMap<>();
         for (ParticipationRequestDto request : requests) {
-            if (confirmedRequestMap.containsKey(request.getEventId())) {
-                confirmedRequestMap.put(request.getEventId(), confirmedRequestMap.get(request.getEventId()) + 1);
+            if (confirmedRequestMap.containsKey(request.getEvent())) {
+                confirmedRequestMap.put(request.getEvent(), confirmedRequestMap.get(request.getEvent()) + 1);
             } else {
-                confirmedRequestMap.put(request.getEventId(), 1L);
+                confirmedRequestMap.put(request.getEvent(), 1L);
             }
         }
         for (Long id : idsList) {

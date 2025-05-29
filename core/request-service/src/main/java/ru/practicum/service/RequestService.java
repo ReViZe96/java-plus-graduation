@@ -1,11 +1,9 @@
 package ru.practicum.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.EventRequestStatusUpdateResult;
-import ru.practicum.dto.ParticipationRequestDto;
+import ru.practicum.dto.requests.ParticipationRequestDto;
 import ru.practicum.model.RequestStatus;
 
 import java.util.List;

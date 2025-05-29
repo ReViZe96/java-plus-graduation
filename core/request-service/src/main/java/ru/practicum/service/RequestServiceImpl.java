@@ -7,9 +7,9 @@ import ru.practicum.client.EventClient;
 import ru.practicum.client.UserClient;
 import ru.practicum.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.EventRequestStatusUpdateResult;
-import ru.practicum.dto.ParticipationRequestDto;
 import ru.practicum.dto.enums.EventState;
 import ru.practicum.dto.events.EventDto;
+import ru.practicum.dto.requests.ParticipationRequestDto;
 import ru.practicum.dto.users.UserDto;
 import ru.practicum.exception.*;
 import ru.practicum.mapper.RequestMapper;
@@ -100,7 +100,8 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<ParticipationRequestDto> getEventParticipants(Long userId, Long eventId, HttpServletRequest request) {
         List<EventDto> userEvents = eventClient.findAllByInitiatorId(userId);
-        EventDto event = userEvents.stream().filter(e -> e.getInitiator().getId().equals(userId)).findFirst()
+
+        EventDto event = userEvents.stream().findFirst()
                 .orElseThrow(() -> new ValidationException(String.format("User with id %s is not initiator of event with id %s",
                         userId, eventId)));
         return requestRepository.findByEventId(event.getId())

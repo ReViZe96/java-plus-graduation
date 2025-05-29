@@ -1,8 +1,8 @@
 package ru.practicum.mapper;
 
 import org.mapstruct.Mapper;
-import ru.practicum.dto.UserDto;
-import ru.practicum.dto.UserShortDto;
+import ru.practicum.dto.users.UserDto;
+import ru.practicum.dto.users.UserShortDto;
 import ru.practicum.model.User;
 
 @Mapper(componentModel = "spring")

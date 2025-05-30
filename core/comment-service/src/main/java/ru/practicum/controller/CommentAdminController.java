@@ -27,13 +27,13 @@ public class CommentAdminController {
         return commentService.adminUpdateCommentStatus(commentId, dto);
     }
 
-    @GetMapping("/byEventId/{eventId}/andCommentStatus/{commentStatus}")
-    public List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @PathVariable CommentStatus commentStatus) {
+    @GetMapping("/byEventId/{eventId}/andCommentStatus")
+    public List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @RequestParam CommentStatus commentStatus) {
         return commentService.findByEventIdAndStatus(eventId, commentStatus);
     }
 
-    @GetMapping("/all/byEventIdsAndCommentStatus/{commentStatus}")
-    List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @PathVariable CommentStatus commentStatus) {
+    @GetMapping("/all/byEventIdsAndCommentStatus")
+    List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @RequestParam CommentStatus commentStatus) {
         return commentService.findAllByEventIdInAndStatus(idsList, commentStatus);
     }
 

@@ -19,8 +19,8 @@ public interface CommentClient {
      * @param commentStatus статус комментариев
      * @return список комментариев.
      */
-    @GetMapping("/admin/comments/byEventId/{eventId}/andCommentStatus/{commentStatus}")
-    List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @PathVariable CommentStatus commentStatus);
+    @GetMapping("/admin/comments/byEventId/{eventId}/andCommentStatus")
+    List<CommentDto> findByEventIdAndStatus(@PathVariable Long eventId, @RequestParam CommentStatus commentStatus);
 
     /**
      * Получение комментариев с конкретным статусом по конкретному списку событий.
@@ -28,7 +28,7 @@ public interface CommentClient {
      * @param commentStatus статус комментариев
      * @return список комментариев.
      */
-    @GetMapping("admin/comments/all/byEventIdsAndCommentStatus/{commentStatus}")
-    List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @PathVariable CommentStatus commentStatus);
+    @GetMapping("admin/comments/all/byEventIdsAndCommentStatus")
+    List<CommentDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList, @RequestParam CommentStatus commentStatus);
 
 }

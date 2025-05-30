@@ -95,24 +95,24 @@ public class PrivateRequestController {
     }
 
 
-    @GetMapping("/events/{eventId}/requests/byStatus/{requestStatus}")
+    @GetMapping("/events/{eventId}/requests/byStatus")
     public ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(@PathVariable Long userId,
                                                                         @PathVariable Long eventId,
-                                                                        @PathVariable RequestStatus requestStatus) {
+                                                                        @RequestParam RequestStatus requestStatus) {
         return requestService.findByRequesterIdAndEventIdAndStatus(userId, eventId, requestStatus);
     }
 
-    @GetMapping("/events/{eventId}/requestsCount/byStatus/{requestStatus}")
+    @GetMapping("/events/{eventId}/requestsCount")
     public Long countRequestsByEventIdAndStatus(@PathVariable Long userId,
                                                 @PathVariable Long eventId,
-                                                @PathVariable RequestStatus requestStatus) {
+                                                @RequestParam RequestStatus requestStatus) {
         return requestService.countRequestsByEventIdAndStatus(eventId, requestStatus);
     }
 
-    @GetMapping("/events/requests/byStatus/{requestStatus}")
+    @GetMapping("/events/requests")
     public List<ParticipationRequestDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList,
                                                      @PathVariable Long userId,
-                                                     @PathVariable RequestStatus requestStatus) {
+                                                     @RequestParam RequestStatus requestStatus) {
         return requestService.findAllByEventIdInAndStatus(idsList, requestStatus);
     }
 

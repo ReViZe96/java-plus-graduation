@@ -21,10 +21,10 @@ public interface RequestClient {
      * @param requestStatus требуемый статус события
      * @return запрос на участие в событии.
      */
-    @GetMapping("/users/{userId}/events/{eventId}/requests/byStatus/{requestStatus}")
+    @GetMapping("/users/{userId}/events/{eventId}/requests/byStatus")
     ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(@PathVariable Long userId,
-                                                                        @PathVariable Long eventId,
-                                                                        @PathVariable RequestStatus requestStatus);
+                                                                 @PathVariable Long eventId,
+                                                                 @RequestParam RequestStatus requestStatus);
 
     /**
      * Получить количество запросов на участие в конкретном событии с конкретным статусом.
@@ -33,10 +33,10 @@ public interface RequestClient {
      * @param requestStatus требуемый статус события
      * @return количество запросов на участие в событии.
      */
-    @GetMapping("/users/{userId}/events/{eventId}/requestsCount/byStatus/{requestStatus}")
+    @GetMapping("/users/{userId}/events/{eventId}/requestsCount")
     Long countRequestsByEventIdAndStatus(@PathVariable Long userId,
                                          @PathVariable Long eventId,
-                                         @PathVariable RequestStatus requestStatus);
+                                         @RequestParam RequestStatus requestStatus);
 
     /**
      * Получить все запросы на участие в конкретных событиях с конкретным статусом.
@@ -45,9 +45,9 @@ public interface RequestClient {
      * @param requestStatus требуемый статус событий
      * @return список запросов на участие в событиях.
      */
-    @GetMapping("/users/{userId}/events/requests/byStatus/{requestStatus}")
+    @GetMapping("/users/{userId}/events/requests")
     List<ParticipationRequestDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList,
-                                                                     @PathVariable Long userId,
-                                                                     @PathVariable RequestStatus requestStatus);
+                                                              @PathVariable Long userId,
+                                                              @RequestParam RequestStatus requestStatus);
 
 }

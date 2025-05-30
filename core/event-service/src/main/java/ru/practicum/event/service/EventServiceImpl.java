@@ -51,11 +51,19 @@ public class EventServiceImpl implements EventService {
     public List<EventDto> adminEventsSearch(SearchEventsParam param) {
         Pageable pageable = PageRequest.of(param.getFrom(), param.getSize());
         Predicate predicate = EventPredicates.adminFilter(param);
+        List<Event> events;
         if (predicate == null) {
-            return addMinimalDataToList(eventRepository.findAll(pageable).stream().map(eventMapper::toDto).toList());
+             events = eventRepository.findAll(pageable).stream().toList();
         } else {
-            return addMinimalDataToList(eventRepository.findAll(predicate, pageable).stream().map(eventMapper::toDto).toList());
+            events = eventRepository.findAll(predicate, pageable).stream().toList();
         }
+
+        List<EventDto> eventDtoList = new ArrayList<>();
+        for (Event event : events) {
+            EventDto eventDto = parseCategoryAndInitiator(event);
+            eventDtoList.add(eventDto);
+        }
+        return addMinimalDataToList(eventDtoList);
     }
 
     @Override
@@ -86,7 +94,8 @@ public class EventServiceImpl implements EventService {
             }
         }
         event = eventRepository.save(event);
-        return addAdvancedData(eventMapper.toDto(event));
+        EventDto eventDto = parseCategoryAndInitiator(event);
+        return addAdvancedData(eventDto);
     }
 
     @Override
@@ -113,10 +122,17 @@ public class EventServiceImpl implements EventService {
         if (params.getOnlyAvailable()) {
             filteredEvents = filteredEvents.stream().filter(this::isEventAvailable).toList();
         }
-        List<EventShortDto> eventDtos = addAdvancedDataToShortDtoList(filteredEvents
-                .stream()
-                .map(eventMapper::toEventShortDto)
-                .toList());
+
+        List<EventShortDto> eventDtos = new ArrayList<>();
+        for (Event event : filteredEvents) {
+            EventShortDto eventDto = eventMapper.toEventShortDto(event);
+            CategoryDto category = categoryClient.getCategoryById(event.getCategoryId());
+            eventDto.setCategory(category);
+            UserDto initiator = userClient.getUsers(List.of(event.getInitiatorId()), 0, 1).getFirst();
+            UserShortDto initiatorShortInfo = new UserShortDto(initiator.getId(), initiator.getName());
+            eventDto.setInitiator(initiatorShortInfo);
+            eventDtos.add(eventDto);
+        }
 
         EventSort sort = params.getSort();
         if (sort != null) {
@@ -133,7 +149,9 @@ public class EventServiceImpl implements EventService {
     public EventDto getEvent(Long eventId) {
         Event event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id %s not found", eventId)));
-        return addAdvancedData(eventMapper.toDto(event));
+
+        EventDto eventDto = parseCategoryAndInitiator(event);
+        return addAdvancedData(eventDto);
     }
 
 
@@ -192,13 +210,13 @@ public class EventServiceImpl implements EventService {
                     .format("Field: eventDate. Error: должно содержать дату, которая еще не наступила. Value: %s",
                             eventCreateDto.getEventDate()));
         }
-        List<UserDto> initiator = userClient.getUsers(List.of(userId), 0, 1);
-        if (initiator.isEmpty()) {
+        UserDto initiator = userClient.getUsers(List.of(userId), 0, 1).getFirst();
+        if (initiator == null) {
             throw  new NotFoundException("User not found");
         }
 
         Event event = eventMapper.fromDto(eventCreateDto);
-        event.setInitiatorId(initiator.getFirst().getId());
+        event.setInitiatorId(initiator.getId());
         CategoryDto category = categoryClient.getCategoryById(eventCreateDto.getCategory());
         if (category == null) {
             throw new NotFoundException("Category not found");
@@ -209,7 +227,12 @@ public class EventServiceImpl implements EventService {
         event.setCreatedOn(LocalDateTime.now());
         event.setState(EventState.PENDING);
         event = eventRepository.save(event);
-        return addAdvancedData(eventMapper.toDto(event));
+
+        EventDto eventDto = eventMapper.toDto(event);
+        eventDto.setCategory(category);
+        UserShortDto initiatorShortInfo = new UserShortDto(initiator.getId(), initiator.getName());
+        eventDto.setInitiator(initiatorShortInfo);
+        return addAdvancedData(eventDto);
     }
 
     @Override
@@ -244,12 +267,7 @@ public class EventServiceImpl implements EventService {
             }
         }
         event = eventRepository.save(event);
-        EventDto eventDto = eventMapper.toDto(event);
-        CategoryDto category = categoryClient.getCategoryById(event.getCategoryId());
-        eventDto.setCategory(category);
-        UserDto initiator = userClient.getUsers(List.of(event.getInitiatorId()), 0, 1).getFirst();
-        UserShortDto initiatorShortInfo = new UserShortDto(initiator.getId(), initiator.getName());
-        eventDto.setInitiator(initiatorShortInfo);
+        EventDto eventDto = parseCategoryAndInitiator(event);
         return addAdvancedData(eventDto);
     }
 
@@ -373,4 +391,15 @@ public class EventServiceImpl implements EventService {
                 .peek(dto -> dto.setConfirmedRequests(confirmedMap.get(dto.getId())))
                 .toList();
     }
+
+    private EventDto parseCategoryAndInitiator(Event event) {
+        EventDto eventDto = eventMapper.toDto(event);
+        CategoryDto category = categoryClient.getCategoryById(event.getCategoryId());
+        eventDto.setCategory(category);
+        UserDto initiator = userClient.getUsers(List.of(event.getInitiatorId()), 0, 1).getFirst();
+        UserShortDto initiatorShortInfo = new UserShortDto(initiator.getId(), initiator.getName());
+        eventDto.setInitiator(initiatorShortInfo);
+        return eventDto;
+    }
+
 }

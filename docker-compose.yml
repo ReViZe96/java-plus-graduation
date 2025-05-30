@@ -1,16 +1,16 @@
 services:
-#  stats-server:
-#    build: ./stat/stat-server
-#    image: ewm-stats-server
-#    container_name: ewm-stats-server
-#    ports:
-#      - "9090:9090"
-#    depends_on:
-#      - stats-db
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
-#      - SPRING_DATASOURCE_USERNAME=stats-db
-#      - SPRING_DATASOURCE_PASSWORD=secret
+  stats-server:
+    build: ./stat/stat-server
+    image: ewm-stats-server
+    container_name: ewm-stats-server
+    ports:
+      - "9090:9090"
+    depends_on:
+      - stats-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
+      - SPRING_DATASOURCE_USERNAME=stats-db
+      - SPRING_DATASOURCE_PASSWORD=secret
 
   stats-db:
     image: postgres:16.1
@@ -29,19 +29,19 @@ services:
       interval: 5s
       retries: 10
 
-#  user-service:
-#    build: ./user-service
-#    image: user-service
-#    container_name: user-service
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - user-db
-#    environment:
-#      - STAT_SERVER_URI=http://stats-server:9090
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user-db
-#      - SPRING_DATASOURCE_USERNAME=user-db
-#      - SPRING_DATASOURCE_PASSWORD=user_pw
+  user-service:
+    build: ./user-service
+    image: user-service
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-db
+    environment:
+      - STAT_SERVER_URI=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user-db
+      - SPRING_DATASOURCE_USERNAME=user-db
+      - SPRING_DATASOURCE_PASSWORD=user_pw
 
   user-db:
     image: postgres:16.1
@@ -60,19 +60,19 @@ services:
       interval: 5s
       retries: 10
 
-#  event-service:
-#    build: ./event-service
-#    image: event-service
-#    container_name: event-service
-#    ports:
-#      - "8081:8081"
-#    depends_on:
-#      - event-db
-#    environment:
-#      - STAT_SERVER_URI=http://stats-server:9090
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://event-db:5432/event-db
-#      - SPRING_DATASOURCE_USERNAME=event-db
-#      - SPRING_DATASOURCE_PASSWORD=event_pw
+  event-service:
+    build: ./event-service
+    image: event-service
+    container_name: event-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - event-db
+    environment:
+      - STAT_SERVER_URI=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://event-db:5432/event-db
+      - SPRING_DATASOURCE_USERNAME=event-db
+      - SPRING_DATASOURCE_PASSWORD=event_pw
 
   event-db:
     image: postgres:16.1
@@ -91,19 +91,19 @@ services:
       interval: 5s
       retries: 10
 
-#  request-service:
-#    build: ./request-service
-#    image: request-service
-#    container_name: request-service
-#    ports:
-#      - "8082:8082"
-#    depends_on:
-#      - request-db
-#    environment:
-#      - STAT_SERVER_URI=http://stats-server:9090
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://request-db:5432/request-db
-#      - SPRING_DATASOURCE_USERNAME=request-db
-#      - SPRING_DATASOURCE_PASSWORD=request_pw
+  request-service:
+    build: ./request-service
+    image: request-service
+    container_name: request-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - request-db
+    environment:
+      - STAT_SERVER_URI=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://request-db:5432/request-db
+      - SPRING_DATASOURCE_USERNAME=request-db
+      - SPRING_DATASOURCE_PASSWORD=request_pw
 
   request-db:
     image: postgres:16.1
@@ -122,19 +122,19 @@ services:
       interval: 5s
       retries: 10
 
-#  category-service:
-#    build: ./category-service
-#    image: category-service
-#    container_name: category-service
-#    ports:
-#      - "8083:8083"
-#    depends_on:
-#      - category-db
-#    environment:
-#      - STAT_SERVER_URI=http://stats-server:9090
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://category-db:5432/category-db
-#      - SPRING_DATASOURCE_USERNAME=category-db
-#      - SPRING_DATASOURCE_PASSWORD=category_pw
+  category-service:
+    build: ./category-service
+    image: category-service
+    container_name: category-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - category-db
+    environment:
+      - STAT_SERVER_URI=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://category-db:5432/category-db
+      - SPRING_DATASOURCE_USERNAME=category-db
+      - SPRING_DATASOURCE_PASSWORD=category_pw
 
   category-db:
     image: postgres:16.1
@@ -153,37 +153,6 @@ services:
       interval: 5s
       retries: 10
 
-#  comment-service:
-#    build: ./comment-service
-#    image: comment-service
-#    container_name: comment-service
-#    ports:
-#      - "8084:8084"
-#    depends_on:
-#      - comment-db
-#    environment:
-#      - STAT_SERVER_URI=http://stats-server:9090
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://comment-db:5432/comment-db
-#      - SPRING_DATASOURCE_USERNAME=comment-db
-#      - SPRING_DATASOURCE_PASSWORD=comment_pw
-
-  comment-db:
-    image: postgres:16.1
-    container_name: comment-db
-    ports:
-      - "65432:5432"
-    volumes:
-      - commentData:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=comment-db
-      - POSTGRES_USER=comment-db
-      - POSTGRES_PASSWORD=comment_pw
-    healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
-      interval: 5s
-      retries: 10
-
 volumes:
   statData:
     driver: local
@@ -194,8 +163,4 @@ volumes:
   requestData:
     driver: local
   categoryData:
-    driver: local
-  commentData:
-    driver: local
-  compilationData:
     driver: local

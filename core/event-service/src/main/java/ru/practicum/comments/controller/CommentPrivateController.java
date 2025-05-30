@@ -1,12 +1,12 @@
-package ru.practicum.controller;
+package ru.practicum.comments.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.NewCommentDto;
-import ru.practicum.dto.comments.CommentDto;
-import ru.practicum.service.CommentService;
+import ru.practicum.comments.dto.NewCommentDto;
+import ru.practicum.dto.events.CommentDto;
+import ru.practicum.comments.service.CommentService;
 
 @RestController
 @RequiredArgsConstructor

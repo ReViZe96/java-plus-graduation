@@ -1,7 +1,7 @@
-package ru.practicum.dto;
+package ru.practicum.comments.dto;
 
 import lombok.Data;
-import ru.practicum.enums.AdminUpdateCommentStatusAction;
+import ru.practicum.comments.enums.AdminUpdateCommentStatusAction;
 
 @Data
 public class AdminUpdateCommentStatusDto {

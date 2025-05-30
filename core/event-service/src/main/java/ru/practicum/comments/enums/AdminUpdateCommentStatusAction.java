@@ -1,4 +1,4 @@
-package ru.practicum.enums;
+package ru.practicum.comments.enums;
 
 public enum AdminUpdateCommentStatusAction {
     PUBLISH_COMMENT,

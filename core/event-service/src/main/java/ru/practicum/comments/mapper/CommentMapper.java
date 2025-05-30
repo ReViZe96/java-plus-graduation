@@ -1,10 +1,10 @@
-package ru.practicum.mapper;
+package ru.practicum.comments.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.practicum.dto.NewCommentDto;
-import ru.practicum.dto.comments.CommentDto;
-import ru.practicum.model.Comment;
+import ru.practicum.comments.dto.NewCommentDto;
+import ru.practicum.dto.events.CommentDto;
+import ru.practicum.comments.model.Comment;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {

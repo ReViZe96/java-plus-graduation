@@ -7,9 +7,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.client.*;
+import ru.practicum.comments.mapper.CommentMapper;
+import ru.practicum.comments.repository.CommentRepository;
 import ru.practicum.dto.ViewStats;
 import ru.practicum.dto.categories.CategoryDto;
-import ru.practicum.dto.comments.CommentDto;
+import ru.practicum.dto.events.CommentDto;
 import ru.practicum.dto.enums.CommentStatus;
 import ru.practicum.dto.enums.EventState;
 import ru.practicum.dto.enums.RequestStatus;
@@ -45,7 +47,8 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
     private final StatClient statClient;
-    private final CommentClient commentClient;
+    private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
 
     @Override
     public List<EventDto> adminEventsSearch(SearchEventsParam param) {
@@ -305,7 +308,8 @@ public class EventServiceImpl implements EventService {
 
         eventDto.setConfirmedRequests(requestClient.countRequestsByEventIdAndStatus(0L, eventDto.getId(), RequestStatus.CONFIRMED));
 
-        List<CommentDto> comments = commentClient.findByEventIdAndStatus(eventDto.getId(), CommentStatus.PUBLISHED);
+        List<CommentDto> comments = commentRepository.findByEventIdAndStatus(eventDto.getId(), CommentStatus.PUBLISHED).stream()
+                .map(commentMapper::toDto).toList();
         eventDto.setComments(comments);
 
         return eventDto;
@@ -335,7 +339,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private HashMap<Long, List<CommentDto>> getEventComments(List<Long> idsList) {
-        List<CommentDto> comments = commentClient.findAllByEventIdInAndStatus(idsList, CommentStatus.PUBLISHED);
+        List<CommentDto> comments = commentRepository.findAllByEventIdInAndStatus(idsList, CommentStatus.PUBLISHED).stream()
+                .map(commentMapper::toDto).toList();
         HashMap<Long, List<CommentDto>> commentsMap = new HashMap<>();
         for (CommentDto comment : comments) {
             if (!commentsMap.containsKey(comment.getEventId())) {

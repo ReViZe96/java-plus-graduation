@@ -2,7 +2,6 @@ package ru.practicum.dto.events;
 
 import lombok.Data;
 import ru.practicum.dto.categories.CategoryDto;
-import ru.practicum.dto.comments.CommentDto;
 import ru.practicum.dto.enums.EventState;
 import ru.practicum.dto.users.UserShortDto;
 

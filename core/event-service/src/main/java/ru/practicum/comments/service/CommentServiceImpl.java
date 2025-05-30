@@ -1,4 +1,4 @@
-package ru.practicum.service;
+package ru.practicum.comments.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -6,20 +6,20 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.EventClient;
 import ru.practicum.client.RequestClient;
 import ru.practicum.client.UserClient;
-import ru.practicum.dto.AdminUpdateCommentStatusDto;
-import ru.practicum.dto.NewCommentDto;
-import ru.practicum.dto.comments.CommentDto;
+import ru.practicum.comments.dto.AdminUpdateCommentStatusDto;
+import ru.practicum.comments.dto.NewCommentDto;
+import ru.practicum.comments.enums.AdminUpdateCommentStatusAction;
+import ru.practicum.comments.mapper.CommentMapper;
+import ru.practicum.comments.model.Comment;
+import ru.practicum.comments.repository.CommentRepository;
+import ru.practicum.dto.enums.CommentStatus;
 import ru.practicum.dto.enums.EventState;
 import ru.practicum.dto.enums.RequestStatus;
+import ru.practicum.dto.events.CommentDto;
 import ru.practicum.dto.events.EventDto;
 import ru.practicum.dto.users.UserDto;
-import ru.practicum.enums.AdminUpdateCommentStatusAction;
-import ru.practicum.enums.CommentStatus;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.OperationForbiddenException;
-import ru.practicum.mapper.CommentMapper;
-import ru.practicum.model.Comment;
-import ru.practicum.repository.CommentRepository;
 
 import java.util.List;
 

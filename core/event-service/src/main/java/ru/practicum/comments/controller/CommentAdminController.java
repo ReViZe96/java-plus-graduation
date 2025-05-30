@@ -1,12 +1,12 @@
-package ru.practicum.controller;
+package ru.practicum.comments.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.AdminUpdateCommentStatusDto;
-import ru.practicum.dto.comments.CommentDto;
-import ru.practicum.enums.CommentStatus;
-import ru.practicum.service.CommentService;
+import ru.practicum.comments.dto.AdminUpdateCommentStatusDto;
+import ru.practicum.dto.events.CommentDto;
+import ru.practicum.dto.enums.CommentStatus;
+import ru.practicum.comments.service.CommentService;
 
 import java.util.List;
 

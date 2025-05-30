@@ -1,4 +1,4 @@
-package ru.practicum.dto.comments;
+package ru.practicum.dto.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

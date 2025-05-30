@@ -1,8 +1,8 @@
-package ru.practicum.repository;
+package ru.practicum.comments.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.practicum.enums.CommentStatus;
-import ru.practicum.model.Comment;
+import ru.practicum.comments.model.Comment;
+import ru.practicum.dto.enums.CommentStatus;
 
 import java.util.List;
 

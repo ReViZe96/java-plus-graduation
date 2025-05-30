@@ -1,10 +1,9 @@
-package ru.practicum.model;
+package ru.practicum.comments.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import ru.practicum.enums.CommentStatus;
+import ru.practicum.dto.enums.CommentStatus;
 
 import java.time.LocalDateTime;
 

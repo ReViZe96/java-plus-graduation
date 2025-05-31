@@ -1,0 +1,44 @@
+package ru.practicum.event.controller;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.dto.events.EventDto;
+import ru.practicum.event.dto.EventCreateDto;
+import ru.practicum.event.dto.EventUpdateDto;
+import ru.practicum.event.service.EventService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(path = "/users/{userId}/events")
+@RequiredArgsConstructor
+public class PrivateEventController {
+    private final EventService eventService;
+
+    @GetMapping
+    public List<EventDto> getEvents(@PathVariable("userId") Long userId,
+                                    @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                    @RequestParam(defaultValue = "10") int size) {
+        return eventService.privateUserEvents(userId, from, size);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public EventDto createEvent(@PathVariable("userId") Long userId, @Valid @RequestBody EventCreateDto eventDto) {
+        return eventService.privateEventCreate(userId, eventDto);
+    }
+
+    @GetMapping(path = "/{eventId}")
+    public EventDto getEvent(@PathVariable("userId") Long userId, @PathVariable("eventId") Long eventId) {
+        return eventService.privateGetUserEvent(userId, eventId);
+    }
+
+    @PatchMapping(path = "/{eventId}")
+    public EventDto updateEvent(@PathVariable("userId") Long userId,
+                                @PathVariable("eventId") Long eventId, @Valid @RequestBody EventUpdateDto eventDto) {
+        return eventService.privateUpdateUserEvent(userId, eventId, eventDto);
+    }
+}

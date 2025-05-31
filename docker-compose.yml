@@ -2,6 +2,7 @@ services:
   stats-server:
     build: ./stat/stat-server
     image: ewm-stats-server
+    restart: on-failure
     container_name: ewm-stats-server
     ports:
       - "9090:9090"
@@ -29,40 +30,142 @@ services:
       interval: 5s
       retries: 10
 
-  ewm-service:
-    build: ./main-service
-    image: ewm-server
-    container_name: ewm-server
+  user-service:
+    build: ./user-service
+    image: user-service
+    restart: on-failure
+    container_name: user-service
     ports:
       - "8080:8080"
     depends_on:
-      - ewm-db
+      - user-db
     environment:
       - STAT_SERVER_URI=http://stats-server:9090
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
-      - SPRING_DATASOURCE_USERNAME=ewm-db
-      - SPRING_DATASOURCE_PASSWORD=secret
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user-db
+      - SPRING_DATASOURCE_USERNAME=user-db
+      - SPRING_DATASOURCE_PASSWORD=user_pw
 
-  ewm-db:
+  user-db:
     image: postgres:16.1
-    container_name: ewm-db
+    container_name: user-db
     ports:
       - "25432:5432"
     volumes:
-      - mainData:/var/lib/postgresql/data/
+      - userData:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=ewm-db
-      - POSTGRES_USER=ewm-db
-      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=user-db
+      - POSTGRES_USER=user-db
+      - POSTGRES_PASSWORD=user_pw
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
       interval: 5s
       retries: 10
 
+  event-service:
+    build: ./event-service
+    image: event-service
+    restart: on-failure
+    container_name: event-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - event-db
+    environment:
+      - STAT_SERVER_URI=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://event-db:5432/event-db
+      - SPRING_DATASOURCE_USERNAME=event-db
+      - SPRING_DATASOURCE_PASSWORD=event_pw
+
+  event-db:
+    image: postgres:16.1
+    container_name: event-db
+    ports:
+      - "35432:5432"
+    volumes:
+      - eventData:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=event-db
+      - POSTGRES_USER=event-db
+      - POSTGRES_PASSWORD=event_pw
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  request-service:
+    build: ./request-service
+    image: request-service
+    restart: on-failure
+    container_name: request-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - request-db
+    environment:
+      - STAT_SERVER_URI=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://request-db:5432/request-db
+      - SPRING_DATASOURCE_USERNAME=request-db
+      - SPRING_DATASOURCE_PASSWORD=request_pw
+
+  request-db:
+    image: postgres:16.1
+    container_name: request-db
+    ports:
+      - "45432:5432"
+    volumes:
+      - requestData:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=request-db
+      - POSTGRES_USER=request-db
+      - POSTGRES_PASSWORD=request_pw
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  category-service:
+    build: ./category-service
+    image: category-service
+    restart: on-failure
+    container_name: category-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - category-db
+    environment:
+      - STAT_SERVER_URI=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://category-db:5432/category-db
+      - SPRING_DATASOURCE_USERNAME=category-db
+      - SPRING_DATASOURCE_PASSWORD=category_pw
+
+  category-db:
+    image: postgres:16.1
+    container_name: category-db
+    ports:
+      - "55432:5432"
+    volumes:
+      - categoryData:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=category-db
+      - POSTGRES_USER=category-db
+      - POSTGRES_PASSWORD=category_pw
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
 volumes:
   statData:
     driver: local
-  mainData:
+  userData:
+    driver: local
+  eventData:
+    driver: local
+  requestData:
+    driver: local
+  categoryData:
     driver: local

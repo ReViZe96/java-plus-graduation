@@ -2,6 +2,7 @@ services:
   stats-server:
     build: ./stat/stat-server
     image: ewm-stats-server
+    restart: on-failure
     container_name: ewm-stats-server
     ports:
       - "9090:9090"
@@ -32,6 +33,7 @@ services:
   user-service:
     build: ./user-service
     image: user-service
+    restart: on-failure
     container_name: user-service
     ports:
       - "8080:8080"
@@ -63,6 +65,7 @@ services:
   event-service:
     build: ./event-service
     image: event-service
+    restart: on-failure
     container_name: event-service
     ports:
       - "8081:8081"
@@ -94,6 +97,7 @@ services:
   request-service:
     build: ./request-service
     image: request-service
+    restart: on-failure
     container_name: request-service
     ports:
       - "8082:8082"
@@ -125,6 +129,7 @@ services:
   category-service:
     build: ./category-service
     image: category-service
+    restart: on-failure
     container_name: category-service
     ports:
       - "8083:8083"

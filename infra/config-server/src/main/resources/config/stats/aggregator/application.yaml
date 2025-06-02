@@ -1,0 +1,17 @@
+server:
+  port: 0
+
+application:
+  name: aggregator
+
+aggregator:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      client-id: user-action-consumer
+      group-id: aggregator-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: ru.yandex.practicum.serializer.UserActionDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: ru.yandex.practicum.serializer.EventSimilaritySerializer

@@ -28,13 +28,13 @@ public class UserActionHandler {
 
     public void handle(UserActionProto userActionProto) {
         UserActionAvro userActionAvro = userActionAvroMapper.userActionToAvro(userActionProto);
-        ProducerRecord<String, SpecificRecordBase> producerSensorRecord = new ProducerRecord<>(
+        ProducerRecord<String, SpecificRecordBase> producerUserActionRecord = new ProducerRecord<>(
                 USER_TOPIC,
                 null,
                 System.currentTimeMillis(),
                 userActionAvro.getActionType().name(),
                 userActionAvro);
-        Future<RecordMetadata> message = producer.send(producerSensorRecord);
+        Future<RecordMetadata> message = producer.send(producerUserActionRecord);
         try {
             message.get();
             log.info("Пользовательское действие типа {} успешно отправлено в топик {}", userActionAvro.getActionType().toString(), USER_TOPIC);

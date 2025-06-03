@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.client.*;
 import ru.practicum.comments.mapper.CommentMapper;
 import ru.practicum.comments.repository.CommentRepository;
-import ru.practicum.dto.ViewStats;
 import ru.practicum.dto.categories.CategoryDto;
 import ru.practicum.dto.events.CommentDto;
 import ru.practicum.dto.enums.CommentStatus;
@@ -31,9 +30,11 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.OperationForbiddenException;
+import ru.practicum.grpc.messages.RecommendedEventProto;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,9 +45,10 @@ public class EventServiceImpl implements EventService {
     private final CategoryClient categoryClient;
     private final UserClient userClient;
     private final RequestClient requestClient;
+    private final CollectorClient collectorClient;
+    private final RecommendationClient recommendationClient;
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
-    private final StatClient statClient;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
 
@@ -142,18 +144,19 @@ public class EventServiceImpl implements EventService {
             switch (sort) {
                 case EVENT_DATE ->
                         eventDtos.stream().sorted(Comparator.comparing(EventShortDto::getEventDate)).toList();
-                case VIEWS -> eventDtos.stream().sorted(Comparator.comparing(EventShortDto::getViews)).toList();
+                case RATING -> eventDtos.stream().sorted(Comparator.comparing(EventShortDto::getRating)).toList();
             }
         }
         return eventDtos;
     }
 
     @Override
-    public EventDto getEvent(Long eventId) {
+    public EventDto getEvent(Long userId, Long eventId) {
         Event event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id %s not found", eventId)));
 
         EventDto eventDto = parseCategoryAndInitiator(event);
+        collectorClient.sendView(userId, eventId);
         return addAdvancedData(eventDto);
     }
 
@@ -283,6 +286,26 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<EventDto> getRecommendedEventsForUser(Long userId) {
+        List<Long> eventIds = recommendationClient.getRecommendationsForUser(userId, 10)
+                .map(RecommendedEventProto::getEventId)
+                .toList();
+        return eventRepository.findAllById(eventIds).stream().map(eventMapper::toDto).toList();
+    }
+
+    @Override
+    public void addLikeToEvent(Long userId, Long eventId) {
+        if (requestClient.findByRequesterIdAndEventIdAndStatus(userId, eventId, RequestStatus.CONFIRMED) != null
+                && eventRepository.findById(eventId).get().getEventDate().isBefore(LocalDateTime.now())) {
+            collectorClient.sendLike(userId, eventId);
+
+        } else {
+            throw new ValidationException("Пользователь с id: " + userId + " не имеет права лайкать мероприятие с id: "
+            + eventId + " т.к. не посещал его");
+        }
+    }
+
+    @Override
     public List<EventDto> findAllByCategoryId(Long categoryId) {
         return eventRepository.findAllByCategoryId(categoryId).stream().map(eventMapper::toDto).toList();
     }
@@ -300,11 +323,10 @@ public class EventServiceImpl implements EventService {
 
 
     private EventDto addAdvancedData(EventDto eventDto) {
-        List<String> gettingUris = new ArrayList<>();
-        gettingUris.add("/events/" + eventDto.getId());
-        Long views = statClient.getStats(LocalDateTime.now().minusYears(1), LocalDateTime.now(), gettingUris, true)
-                .stream().map(ViewStats::getHits).reduce(0L, Long::sum);
-        eventDto.setViews(views);
+        Double rating = recommendationClient.getInteractionsCount(List.of(eventDto.getId()))
+                .map(RecommendedEventProto::getScore)
+                .reduce(0D, Double::sum);
+        eventDto.setRating(rating);
 
         eventDto.setConfirmedRequests(requestClient.countRequestsByEventIdAndStatus(0L, eventDto.getId(), RequestStatus.CONFIRMED));
 
@@ -351,14 +373,13 @@ public class EventServiceImpl implements EventService {
         return commentsMap;
     }
 
-    private HashMap<Long, Long> getEventViews(List<Long> idsList) {
-        List<String> uris = idsList.stream().map(id -> "/events/" + id).toList();
-        List<ViewStats> viewStats = statClient.getStats(LocalDateTime.now().minusYears(1), LocalDateTime.now(), uris, false);
-        HashMap<Long, Long> viewMap = new HashMap<>();
-        for (Long id : idsList) {
-            viewMap.put(id, viewStats.stream().filter(v -> v.getUri().equals("/events/" + id)).map(ViewStats::getHits).findFirst().orElse(0L));
+    private HashMap<Long, Double> getEventRating(List<Long> idsList) {
+        List<RecommendedEventProto> ratings = recommendationClient.getInteractionsCount(idsList).collect(Collectors.toList());
+        HashMap<Long, Double> ratingMap = new HashMap<>();
+        for (RecommendedEventProto recommendedEvent : ratings) {
+            ratingMap.put(recommendedEvent.getEventId(), recommendedEvent.getScore());
         }
-        return viewMap;
+        return ratingMap;
     }
 
     private List<EventDto> addMinimalDataToList(List<EventDto> eventDtoList) {
@@ -374,13 +395,13 @@ public class EventServiceImpl implements EventService {
     private List<EventDto> addAdvancedDataToList(List<EventDto> eventDtoList) {
 
         List<Long> idsList = eventDtoList.stream().map(EventDto::getId).toList();
-        HashMap<Long, Long> viewsMap = getEventViews(idsList);
+        HashMap<Long, Double> ratingMap = getEventRating(idsList);
         HashMap<Long, Long> confirmedMap = getEventConfirmedRequestsCount(idsList);
         HashMap<Long, List<CommentDto>> commentMap = getEventComments(idsList);
 
         return eventDtoList.stream()
                 .peek(dto -> dto.setComments(commentMap.get(dto.getId())))
-                .peek(dto -> dto.setViews(viewsMap.get(dto.getId())))
+                .peek(dto -> dto.setRating(ratingMap.get(dto.getId())))
                 .peek(dto -> dto.setConfirmedRequests(confirmedMap.get(dto.getId())))
                 .toList();
     }
@@ -388,11 +409,11 @@ public class EventServiceImpl implements EventService {
     private List<EventShortDto> addAdvancedDataToShortDtoList(List<EventShortDto> eventShortDtoList) {
 
         List<Long> idsList = eventShortDtoList.stream().map(EventShortDto::getId).toList();
-        HashMap<Long, Long> viewsMap = getEventViews(idsList);
+        HashMap<Long, Double> ratingMap = getEventRating(idsList);
         HashMap<Long, Long> confirmedMap = getEventConfirmedRequestsCount(idsList);
 
         return eventShortDtoList.stream()
-                .peek(dto -> dto.setViews(viewsMap.get(dto.getId())))
+                .peek(dto -> dto.setRating(ratingMap.get(dto.getId())))
                 .peek(dto -> dto.setConfirmedRequests(confirmedMap.get(dto.getId())))
                 .toList();
     }

@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.client.StatClient;
-import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.events.EventDto;
 import ru.practicum.event.dto.EntityParam;
 import ru.practicum.event.dto.EventShortDto;
@@ -24,10 +22,8 @@ import java.util.List;
 public class PublicEventController {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    private static final String MAIN_SERVICE = "ewm-common-module";
 
     private final EventService eventService;
-    private final StatClient statClient;
 
 
     /**
@@ -73,9 +69,7 @@ public class PublicEventController {
         params.setPaid(paid);
         params.setOnlyAvailable(onlyAvailable);
 
-        List<EventShortDto> result = eventService.getEvents(params);
-        saveHit(request);
-        return result;
+        return eventService.getEvents(params);
     }
 
     /**
@@ -88,11 +82,28 @@ public class PublicEventController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EventDto getEvent(@PathVariable Long id, HttpServletRequest request) {
-
-        EventDto result = eventService.getEvent(id);
-        saveHit(request);
+    public EventDto getEvent(@RequestHeader("X-EWM-USER-ID") long userId, @PathVariable Long id, HttpServletRequest request) {
+        EventDto result = eventService.getEvent(userId, id);
         return result;
+    }
+
+    /**
+     * Получение списка событий, рекомендованных пользователю, на основании его предыдущей активности.
+     * @param userId идентификатор пользователя
+     */
+    @GetMapping("/recommendations")
+    public List<EventDto> getRecommendedEventsForUser(@RequestHeader("X-EWM-USER-ID") long userId) {
+        return eventService.getRecommendedEventsForUser(userId);
+    }
+
+    /**
+     * Постановка лайка пользователем конкретному, посещенному им мероприятию.
+     * @param userId идентификатор пользователя
+     * @param eventId идентификатор мероприятия
+     */
+    @PutMapping("/{eventId}/like")
+    public void addLikeToEvent(@RequestHeader("X-EWM-USER-ID") long userId, @PathVariable Long eventId) {
+        eventService.addLikeToEvent(userId, eventId);
     }
 
     @GetMapping("/byIds")
@@ -113,16 +124,6 @@ public class PublicEventController {
     @GetMapping("/all/byInitiatorId/{initiatorId}")
     List<EventDto> findAllByInitiatorId(@PathVariable Long initiatorId) {
         return eventService.findAllByInitiatorId(initiatorId);
-    }
-
-
-    private void saveHit(HttpServletRequest request) {
-        EndpointHitDto endpointHitDto = new EndpointHitDto();
-        endpointHitDto.setApp(MAIN_SERVICE);
-        endpointHitDto.setUri(request.getRequestURI());
-        endpointHitDto.setIp(request.getRemoteAddr());
-        endpointHitDto.setTimestamp(LocalDateTime.now());
-        statClient.saveHit(endpointHitDto);
     }
 
 }

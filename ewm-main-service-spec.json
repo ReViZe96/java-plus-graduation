@@ -482,7 +482,7 @@
             "schema": {
               "minimum": 0,
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 0
             }
           },
@@ -493,7 +493,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 10
             }
           }
@@ -638,7 +638,7 @@
             "schema": {
               "minimum": 0,
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 0
             }
           },
@@ -649,7 +649,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 10
             }
           }
@@ -808,7 +808,7 @@
             "schema": {
               "minimum": 0,
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 0
             }
           },
@@ -819,7 +819,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 10
             }
           }
@@ -949,7 +949,7 @@
             "schema": {
               "minimum": 0,
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 0
             }
           },
@@ -960,7 +960,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 10
             }
           }
@@ -1155,7 +1155,7 @@
             "schema": {
               "minimum": 0,
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 0
             }
           },
@@ -1166,7 +1166,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 10
             }
           }
@@ -1297,7 +1297,7 @@
             "schema": {
               "minimum": 0,
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 0
             }
           },
@@ -1308,7 +1308,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32",
+              "format": "int64",
               "default": 10
             }
           }
@@ -2248,7 +2248,7 @@
           "participantLimit": {
             "type": "integer",
             "description": "Ограничение на количество участников. Значение 0 - означает отсутствие ограничения",
-            "format": "int32",
+            "format": "int64",
             "example": 10,
             "default": 0
           },
@@ -2546,7 +2546,7 @@
           "participantLimit": {
             "type": "integer",
             "description": "Ограничение на количество участников. Значение 0 - означает отсутствие ограничения",
-            "format": "int32",
+            "format": "int64",
             "example": 10,
             "default": 0
           },
@@ -2691,7 +2691,7 @@
           "participantLimit": {
             "type": "integer",
             "description": "Новый лимит пользователей",
-            "format": "int32",
+            "format": "int64",
             "example": 7
           },
           "requestModeration": {
@@ -2756,7 +2756,7 @@
           "participantLimit": {
             "type": "integer",
             "description": "Новый лимит пользователей",
-            "format": "int32",
+            "format": "int64",
             "example": 7
           },
           "requestModeration": {

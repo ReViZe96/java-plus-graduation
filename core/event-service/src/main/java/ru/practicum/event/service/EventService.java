@@ -21,9 +21,13 @@ public interface EventService {
 
     List<EventShortDto> getEvents(EntityParam params);
 
-    EventDto getEvent(Long eventId);
+    EventDto getEvent(Long userId, Long eventId);
 
     List<EventDto> getEvents(List<Long> ids);
+
+    List<EventDto> getRecommendedEventsForUser(Long userId);
+
+    void addLikeToEvent(Long userId, Long eventId);
 
     List<EventDto> findAllByCategoryId(Long categoryId);
 

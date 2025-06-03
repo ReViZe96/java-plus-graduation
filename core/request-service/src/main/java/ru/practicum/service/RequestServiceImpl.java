@@ -3,6 +3,7 @@ package ru.practicum.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.client.CollectorClient;
 import ru.practicum.client.EventClient;
 import ru.practicum.client.UserClient;
 import ru.practicum.dto.EventRequestStatusUpdateRequest;
@@ -28,6 +29,7 @@ public class RequestServiceImpl implements RequestService {
 
     private final UserClient userClient;
     private final EventClient eventClient;
+    private final CollectorClient collectorClient;
     private final RequestRepository requestRepository;
 
     private final RequestMapper requestMapper;
@@ -84,6 +86,8 @@ public class RequestServiceImpl implements RequestService {
             request.setStatus(RequestStatus.CONFIRMED);
             request.setCreatedOn(LocalDateTime.now());
         }
+
+        collectorClient.sendRegistration(userId, eventId);
         return requestMapper.requestToParticipationRequestDto(requestRepository.save(request));
     }
 

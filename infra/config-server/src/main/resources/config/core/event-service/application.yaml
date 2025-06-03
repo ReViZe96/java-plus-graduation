@@ -1,8 +1,6 @@
 server:
   port: 0
 
-statsServiceId: stats-server
-
 spring:
   application:
     name: event-service
@@ -21,3 +19,16 @@ spring:
     driver-class-name: "org.postgresql.Driver"
     username: "event-db"
     password: "event_pw"
+
+grpc:
+  client:
+    analyzer:
+      address: 'discovery:///analyzer'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    collector:
+      address: 'discovery:///collector'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext

@@ -7,7 +7,7 @@ import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.service.GrpcService;
 import ru.practicum.grpc.messages.UserActionProto;
-import ru.practicum.grpc.telemetry.collector.UserActionControllerGrpc;
+import ru.practicum.grpc.collector.UserActionControllerGrpc;
 import ru.practicum.handler.UserActionHandler;
 
 @GrpcService

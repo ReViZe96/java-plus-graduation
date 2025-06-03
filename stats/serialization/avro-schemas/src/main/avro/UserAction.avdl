@@ -10,8 +10,8 @@ protocol UserActionProtocol {
 
     //Сообщение с информацией о действии пользователя
     record UserActionAvro {
-        int userId;
-        int eventId;
+        long userId;
+        long eventId;
         ActionTypeAvro actionType;
         timestamp_ms timestamp;
     }

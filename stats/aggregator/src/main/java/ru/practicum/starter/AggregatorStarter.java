@@ -47,9 +47,11 @@ public class AggregatorStarter {
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     UserActionAvro userAction = (UserActionAvro) record.value();
                     //основная логика работы агрегатора
-                    EventSimilarityAvro eventSimilarity = aggregatorService.createEventSimilarityMessage(userAction);
+                    List<EventSimilarityAvro> eventSimilarities = aggregatorService.createEventSimilarityMessages(userAction);
                     log.info("");
-                    sendToKafka(EVENT_SIMILARITY, "" + eventSimilarity.getEventA(), eventSimilarity);
+                    for (EventSimilarityAvro eventSimilarity : eventSimilarities) {
+                        sendToKafka(EVENT_SIMILARITY, "" + eventSimilarity.getEventA(), eventSimilarity);
+                    }
                 }
                 consumer.commitSync();
             }

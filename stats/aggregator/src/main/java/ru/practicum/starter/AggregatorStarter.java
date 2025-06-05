@@ -48,7 +48,7 @@ public class AggregatorStarter {
                     UserActionAvro userAction = (UserActionAvro) record.value();
                     //основная логика работы агрегатора
                     List<EventSimilarityAvro> eventSimilarities = aggregatorService.createEventSimilarityMessages(userAction);
-                    log.info("");
+                    log.info("Сообщения о сходствах мероприятий сформированы");
                     for (EventSimilarityAvro eventSimilarity : eventSimilarities) {
                         sendToKafka(EVENT_SIMILARITY, "" + eventSimilarity.getEventA(), eventSimilarity);
                     }

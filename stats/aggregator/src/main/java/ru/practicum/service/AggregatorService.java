@@ -44,30 +44,32 @@ public class AggregatorService {
             Double totalWeight = calculateAndUpdateTotalWeight(eventId, existedWeight, newWeight);
 
             for (Long anotherEventId : userEventWeights.keySet()) {
-                if (!Objects.equals(anotherEventId, eventId) || userEventWeights.get(anotherEventId).containsKey(userId)) {
-                    Double anotherEventWeight = userEventWeights.get(anotherEventId).get(userId);
-                    Double weightDifference = Math.min(newWeight, anotherEventWeight) - Math.min(existedWeight, anotherEventWeight);
-                    Double existedSumMinWeights = getSumMinWeights(anotherEventId, eventId);
-                    Double sumMinWeights = existedSumMinWeights;
-
-                    if (weightDifference != 0) {
-                        Double newSumMinWeights = existedSumMinWeights + weightDifference;
-                        sumMinWeights = newSumMinWeights;
-                        putSumMinWeights(anotherEventId, eventId, newSumMinWeights);
-                    }
-
-                    Double anotherEventSumMinWeights = eventWeightSums.getOrDefault(anotherEventId, 0.0);
-
-                    Double similarity = calculateSimilarity(sumMinWeights, totalWeight, anotherEventSumMinWeights);
-
-                    EventSimilarityAvro eventSimilarity = EventSimilarityAvro.newBuilder()
-                            .setEventA(Math.min(eventId, anotherEventId))
-                            .setEventB(Math.max(eventId, anotherEventId))
-                            .setScore(similarity)
-                            .setTimestamp(userAction.getTimestamp())
-                            .build();
-                    result.add(eventSimilarity);
+                if (Objects.equals(anotherEventId, eventId) || !userEventWeights.get(anotherEventId).containsKey(userId)) {
+                    continue;
                 }
+
+                Double anotherEventWeight = userEventWeights.get(anotherEventId).get(userId);
+                Double weightDifference = Math.min(newWeight, anotherEventWeight) - Math.min(existedWeight, anotherEventWeight);
+                Double existedSumMinWeights = getSumMinWeights(anotherEventId, eventId);
+                Double sumMinWeights = existedSumMinWeights;
+
+                if (weightDifference != 0) {
+                    Double newSumMinWeights = existedSumMinWeights + weightDifference;
+                    sumMinWeights = newSumMinWeights;
+                    putSumMinWeights(anotherEventId, eventId, newSumMinWeights);
+                }
+
+                Double anotherEventSumMinWeights = eventWeightSums.getOrDefault(anotherEventId, 0.0);
+
+                Double similarity = calculateSimilarity(sumMinWeights, totalWeight, anotherEventSumMinWeights);
+
+                EventSimilarityAvro eventSimilarity = EventSimilarityAvro.newBuilder()
+                        .setEventA(Math.min(eventId, anotherEventId))
+                        .setEventB(Math.max(eventId, anotherEventId))
+                        .setScore(similarity)
+                        .setTimestamp(userAction.getTimestamp())
+                        .build();
+                result.add(eventSimilarity);
             }
         }
 

@@ -279,10 +279,16 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDto> getEvents(List<Long> ids) {
+        List<EventDto> result = new ArrayList<>();
         if (ids == null || ids.isEmpty()) {
-            return eventRepository.findAll().stream().map(eventMapper::toDto).toList();
+            result = eventRepository.findAll().stream().map(eventMapper::toDto).toList();
+        } else {
+            result = eventRepository.findAllByIdIn(ids).stream().map(eventMapper::toDto).toList();
         }
-        return eventRepository.findAllByIdIn(ids).stream().map(eventMapper::toDto).toList();
+        for (EventDto event : result) {
+            event.setConfirmedRequests(requestClient.countRequestsByEventIdAndStatus(0L, event.getId(), RequestStatus.CONFIRMED));
+        }
+        return result;
     }
 
     @Override

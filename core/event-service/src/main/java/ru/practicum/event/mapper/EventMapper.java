@@ -14,7 +14,6 @@ public interface EventMapper {
     @Mapping(target = "publishedOn", dateFormat = "yyyy-MM-dd HH:mm:ss")
     @Mapping(target = "eventDate", dateFormat = "yyyy-MM-dd HH:mm:ss")
     @Mapping(target = "rating", ignore = true)
-    @Mapping(target = "confirmedRequests", ignore = true)
     EventDto toDto(Event event);
 
     @Mapping(target = "categoryId", ignore = true)

@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: event-service
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
   jpa:
     hibernate:
       ddl-auto: none
@@ -19,6 +25,12 @@ spring:
     driver-class-name: "org.postgresql.Driver"
     username: "event-db"
     password: "event_pw"
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 50
+      failureRateThreshold: 50
 
 grpc:
   client:

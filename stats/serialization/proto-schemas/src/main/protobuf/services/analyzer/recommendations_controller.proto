@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package stats.service.analyzer;
+package stats.service.dashboard;
 
 import "google/protobuf/empty.proto";
 import "messages/analyzer/recommended_event.proto";

@@ -45,7 +45,6 @@ public class UserActionHandler {
         kafkaConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         kafkaConfigs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class.getName());
         kafkaConfigs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, CollectorSerializer.class.getName());
-        kafkaConfigs.put(ProducerConfig.LINGER_MS_CONFIG, 3000);
         return new KafkaProducer<>(kafkaConfigs);
     }
 

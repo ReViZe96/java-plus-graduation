@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.VoidSerializer;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 import ru.practicum.grpc.messages.UserActionProto;
@@ -30,9 +30,6 @@ public class UserActionHandler {
         UserActionAvro userActionAvro = userActionAvroMapper.userActionToAvro(userActionProto);
         ProducerRecord<String, SpecificRecordBase> producerUserActionRecord = new ProducerRecord<>(
                 USER_TOPIC,
-                null,
-                System.currentTimeMillis(),
-                userActionAvro.getActionType().name(),
                 userActionAvro);
         Future<RecordMetadata> message = producer.send(producerUserActionRecord);
         try {
@@ -46,7 +43,7 @@ public class UserActionHandler {
     private Producer<String, SpecificRecordBase> initKafkaProducer() {
         Properties kafkaConfigs = new Properties();
         kafkaConfigs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        kafkaConfigs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        kafkaConfigs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, VoidSerializer.class.getName());
         kafkaConfigs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, CollectorSerializer.class.getName());
         kafkaConfigs.put(ProducerConfig.LINGER_MS_CONFIG, 3000);
         return new KafkaProducer<>(kafkaConfigs);

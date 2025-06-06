@@ -6,9 +6,11 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
@@ -16,7 +18,9 @@ import ru.practicum.ewm.stats.avro.UserActionAvro;
 import ru.practicum.service.AggregatorService;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -32,18 +36,21 @@ public class AggregatorStarter {
     private final KafkaProducer<String, SpecificRecordBase> producer;
     private final KafkaConsumer<String, SpecificRecordBase> consumer;
 
-    /**
-     *
-     */
+    private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
+
+
     public void start() {
+        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
+
         try {
             consumer.subscribe(List.of(USER_TOPIC));
-            Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
             log.info("Агрегатор подписался на топик " + USER_TOPIC);
 
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(5000));
                 log.info("Получены " + records.count() + " записей о действиях пользователей из топика " + USER_TOPIC);
+                int count = 0;
+
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
                     UserActionAvro userAction = (UserActionAvro) record.value();
                     //основная логика работы агрегатора
@@ -52,8 +59,11 @@ public class AggregatorStarter {
                     for (EventSimilarityAvro eventSimilarity : eventSimilarities) {
                         sendToKafka(EVENT_SIMILARITY, "" + eventSimilarity.getEventA(), eventSimilarity);
                     }
+
+                    manageOffsets(record, count, consumer);
+                    count++;
                 }
-                consumer.commitSync();
+                consumer.commitAsync();
             }
 
         } catch (WakeupException ignored) {
@@ -85,6 +95,22 @@ public class AggregatorStarter {
             log.info("Сообщение о сходстве двух мероприятий отправлено в топик {}", topicName);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException("Ошибка во время отправки сообщения в Kafka");
+        }
+    }
+
+    private static void manageOffsets(ConsumerRecord<String, SpecificRecordBase> record, int count,
+                                      KafkaConsumer<String, SpecificRecordBase> consumer) {
+        currentOffsets.put(
+                new TopicPartition(record.topic(), record.partition()),
+                new OffsetAndMetadata(record.offset() + 1)
+        );
+
+        if (count % 10 == 0) {
+            consumer.commitAsync(currentOffsets, (offsets, exception) -> {
+                if (exception != null) {
+                    log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);
+                }
+            });
         }
     }
 

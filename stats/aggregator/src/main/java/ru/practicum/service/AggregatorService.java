@@ -1,7 +1,10 @@
 package ru.practicum.service;
 
+import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.configuration.ScoreSettings;
 import ru.practicum.ewm.stats.avro.ActionTypeAvro;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
@@ -10,7 +13,10 @@ import java.util.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AggregatorService {
+
+    private final ScoreSettings scoreSettings;
 
     //Ключ — идентификатор мероприятия; значение — мапа, где:
     //ключ — идентификатор пользователя, а значение — максимальный вес из всех действий данного пользователя с этим мероприятием.
@@ -83,14 +89,16 @@ public class AggregatorService {
         Double score = 0d;
         switch (actionType) {
             case VIEW:
-                score = 0.4;
+                score = scoreSettings.getView();
                 break;
             case REGISTER:
-                score = 0.8;
+                score = scoreSettings.getRegistration();
                 break;
             case LIKE:
-                score = 1.0;
+                score = scoreSettings.getLike();
                 break;
+            default:
+                throw new ValidationException("Передан некорректный тип действия пользователя.");
         }
         return score;
 

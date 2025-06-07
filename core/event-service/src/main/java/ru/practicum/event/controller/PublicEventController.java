@@ -22,29 +22,28 @@ import java.util.List;
 public class PublicEventController {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
-
     private final EventService eventService;
 
 
     /**
-     * Получение событий с возможностью фильтрации.
-     * В выдаче - только опубликованные события.
+     * Получение мероприятий с возможностью фильтрации.
+     * В выдаче - только опубликованные мероприятия.
      * Текстовый поиск (по аннотации и подробному описанию) - без учета регистра букв.
-     * Если в запросе не указан диапазон дат [rangeStart-rangeEnd], то выгружаются события,
+     * Если в запросе не указан диапазон дат [rangeStart-rangeEnd], то выгружаются мероприятия,
      * которые происходят позже текущей даты и времени.
-     * Информация о каждом событии включает в себя количество просмотров и количество уже одобренных заявок на участие.
+     * Информация о каждом мероприятии включает в себя количество просмотров и количество уже одобренных заявок на участие.
      * Информация о том, что по эндпоинту был осуществлен и обработан запрос, сохраняется в сервисе статистики.
-     * В случае, если по заданным фильтрам не найдено ни одного события, возвращается пустой список.
+     * В случае, если по заданным фильтрам не найдено ни одного мероприятия, возвращается пустой список.
      *
-     * @param text          текст для поиска в содержимом аннотации и подробном описании события
-     * @param sort          Вариант сортировки: по дате события или по количеству просмотров
-     * @param from          количество событий, которые нужно пропустить для формирования текущего набора
-     * @param size          количество событий в наборе
+     * @param text          текст для поиска в содержимом аннотации и подробном описании мероприятия
+     * @param sort          Вариант сортировки: по дате мероприятия или по количеству просмотров
+     * @param from          количество мероприятий, которые нужно пропустить для формирования текущего набора
+     * @param size          количество мероприятий в наборе
      * @param categories    список идентификаторов категорий в которых будет вестись поиск
-     * @param rangeStart    дата и время не раньше которых должно произойти событие
-     * @param rangeEnd      дата и время не позже которых должно произойти событие
-     * @param paid          поиск только платных/бесплатных событий
-     * @param onlyAvailable только события у которых не исчерпан лимит запросов на участие
+     * @param rangeStart    дата и время не раньше которых должно произойти мероприятие
+     * @param rangeEnd      дата и время не позже которых должно произойти мероприятие
+     * @param paid          поиск только платных/бесплатных мероприятий
+     * @param onlyAvailable только мероприятия у которых не исчерпан лимит запросов на участие
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -73,12 +72,12 @@ public class PublicEventController {
     }
 
     /**
-     * Получение подробной информации об опубликованном событии по его идентификатору.
+     * Получение подробной информации об опубликованном мероприятии по его идентификатору.
      * Cобытие должно быть опубликовано.
-     * Информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов.
+     * Информация о мероприятии должна включать в себя количество просмотров и количество подтвержденных запросов.
      * Информация о том, что по эндпоинту был осуществлен и обработан запрос, сохраняется в сервисе статистики.
      *
-     * @param id id события
+     * @param id id мероприятия
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -88,7 +87,8 @@ public class PublicEventController {
     }
 
     /**
-     * Получение списка событий, рекомендованных пользователю, на основании его предыдущей активности.
+     * Получение списка мероприятий, рекомендованных пользователю, на основании его предыдущей активности.
+     *
      * @param userId идентификатор пользователя
      */
     @GetMapping("/recommendations")
@@ -98,7 +98,8 @@ public class PublicEventController {
 
     /**
      * Постановка лайка пользователем конкретному, посещенному им мероприятию.
-     * @param userId идентификатор пользователя
+     *
+     * @param userId  идентификатор пользователя
      * @param eventId идентификатор мероприятия
      */
     @PutMapping("/{eventId}/like")
@@ -106,23 +107,50 @@ public class PublicEventController {
         eventService.addLikeToEvent(userId, eventId);
     }
 
+
+    //------------------------Внутренние эндпоинты для взаимодействия микросервисов между собой-------------------------
+
+    /**
+     * Получение списка мероприятий по их идентификаторам.
+     *
+     * @param ids список идентификаторов запрашиваемых мероприятий
+     */
     @GetMapping("/byIds")
-    List<EventDto> getEvents(@RequestParam(required = false) List<Long> ids) {
+    public List<EventDto> getEvents(@RequestParam(required = false) List<Long> ids) {
         return eventService.getEvents(ids);
     }
 
+    /**
+     * Получение списка мероприятий, принадлежащих конкретной категории (разделу).
+     *
+     * @param categoryId идентификатор категории (раздела), мероприятия из которой запрашиваются
+     * @return список мероприятий конкретной категории (раздела)
+     */
     @GetMapping("/byCategoryId/{categoryId}")
-    List<EventDto> findAllByCategoryId(@PathVariable Long categoryId) {
+    public List<EventDto> findAllByCategoryId(@PathVariable Long categoryId) {
         return eventService.findAllByCategoryId(categoryId);
     }
 
+    /**
+     * Получение конкретного мероприятия по его идентификатору и идентификатору создателя данного мероприятия.
+     *
+     * @param eventId идентификатор мероприятия
+     * @param userId  идентификатор пользователя, создавшего запрашиваемое мероприятие
+     * @return представление запрошенного мероприятия
+     */
     @GetMapping("/byId/{eventId}/andInitiatorId/{userId}")
-    EventDto findByIdAndInitiatorId(@PathVariable Long eventId, @PathVariable Long userId) {
+    public EventDto findByIdAndInitiatorId(@PathVariable Long eventId, @PathVariable Long userId) {
         return eventService.findByIdAndInitiatorId(eventId, userId);
     }
 
+    /**
+     * Получение списка всех мероприятий, созданных конкретным польователем.
+     *
+     * @param initiatorId идентификатор пользователя, создавшего запрашиваемые мероприятия
+     * @return список всех мероприятий конкретного пользователя
+     */
     @GetMapping("/all/byInitiatorId/{initiatorId}")
-    List<EventDto> findAllByInitiatorId(@PathVariable Long initiatorId) {
+    public List<EventDto> findAllByInitiatorId(@PathVariable Long initiatorId) {
         return eventService.findAllByInitiatorId(initiatorId);
     }
 

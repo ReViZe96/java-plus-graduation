@@ -31,9 +31,15 @@ analyzer:
     event-similarity-consumer:
       client-id: events-similarity-consumer
       group-id: events-similarity-group
+      topic: stats.events-similarity.v1
       value-deserializer: ru.practicum.deserializer.EventSimilarityDeserializer
     user-actions-consumer:
       client-id: user-actions-consumer
       group-id: user-actions-group
+      topic: stats.user-actions.v1
       value-deserializer: ru.practicum.deserializer.UserActionDeserializer
     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  score:
+    view: 0.4
+    registration: 0.8
+    like: 1

@@ -29,14 +29,32 @@ public class CollectorClient {
         stub.collectUserAction(userAction);
     }
 
+    /**
+     * Отправить в Kafka сообщение о просмотре события пользователем.
+     *
+     * @param userId  идентификатор пользователя
+     * @param eventId идентификатор события
+     */
     public void sendView(Long userId, Long eventId) {
         sendUserAction(userId, eventId, ActionTypeProto.ACTION_VIEW);
     }
 
+    /**
+     * Отправить в Kafka сообщение о регистрации пользователя на участие в событии.
+     *
+     * @param userId  идентификатор пользователя
+     * @param eventId идентификатор события
+     */
     public void sendRegistration(Long userId, Long eventId) {
         sendUserAction(userId, eventId, ActionTypeProto.ACTION_REGISTER);
     }
 
+    /**
+     * Отправить в Kafka сообщение о реакции пользователя на событие (установка лайка).
+     *
+     * @param userId  идентификатор пользователя
+     * @param eventId идентификатор события
+     */
     public void sendLike(Long userId, Long eventId) {
         sendUserAction(userId, eventId, ActionTypeProto.ACTION_LIKE);
     }

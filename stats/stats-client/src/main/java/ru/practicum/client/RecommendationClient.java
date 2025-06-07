@@ -20,7 +20,8 @@ public class RecommendationClient {
 
     /**
      * Возвращает поток рекомендованных мероприятий для указанного пользователя.
-     * @param userId идентификатор пользователя
+     *
+     * @param userId     идентификатор пользователя
      * @param maxResults ограничение количества мероприятий в результате выполнения запроса
      */
     public Stream<RecommendedEventProto> getRecommendationsForUser(Long userId, Integer maxResults) {
@@ -35,8 +36,9 @@ public class RecommendationClient {
     /**
      * Возвращает поток мероприятий, с которыми не взаимодействовал данный пользователь,
      * но которые максимально похожи на указанное мероприятие.
-     * @param eventId идентификатор мероприятия с которым сравниваем
-     * @param userId идентификатор пользователя
+     *
+     * @param eventId    идентификатор мероприятия с которым сравниваем
+     * @param userId     идентификатор пользователя
      * @param maxResults ограничение количества мероприятий в результате выполнения запроса
      */
     public Stream<RecommendedEventProto> getSimilarEvents(Long eventId, Long userId, Integer maxResults) {
@@ -51,6 +53,7 @@ public class RecommendationClient {
 
     /**
      * Возвращает поток мероприятий с суммой максимальных весов действий каждого пользователя для каждого из этих мероприятий.
+     *
      * @param eventIds список идентификаторов мероприятий
      */
     public Stream<RecommendedEventProto> getInteractionsCount(List<Long> eventIds) {

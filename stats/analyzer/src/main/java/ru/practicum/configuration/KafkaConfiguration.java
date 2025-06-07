@@ -39,24 +39,24 @@ public class KafkaConfiguration {
 
     @Bean
     public KafkaConsumer<String, EventSimilarityAvro> eventSimilarityConsumer() {
-        Properties snapshotsCounsumerConfigs = new Properties();
-        snapshotsCounsumerConfigs.put(ConsumerConfig.CLIENT_ID_CONFIG, eventSimilarityClientId);
-        snapshotsCounsumerConfigs.put(ConsumerConfig.GROUP_ID_CONFIG, eventSimilarityGroupId);
-        snapshotsCounsumerConfigs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        snapshotsCounsumerConfigs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
-        snapshotsCounsumerConfigs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, eventSimilarityValueDeserializer);
-        return new KafkaConsumer<>(snapshotsCounsumerConfigs);
+        Properties eventSimilarityCounsumerConfigs = new Properties();
+        eventSimilarityCounsumerConfigs.put(ConsumerConfig.CLIENT_ID_CONFIG, eventSimilarityClientId);
+        eventSimilarityCounsumerConfigs.put(ConsumerConfig.GROUP_ID_CONFIG, eventSimilarityGroupId);
+        eventSimilarityCounsumerConfigs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        eventSimilarityCounsumerConfigs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
+        eventSimilarityCounsumerConfigs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, eventSimilarityValueDeserializer);
+        return new KafkaConsumer<>(eventSimilarityCounsumerConfigs);
     }
 
     @Bean
     public KafkaConsumer<String, UserActionAvro> userActionConsumer() {
-        Properties hubsConsumerConfigs = new Properties();
-        hubsConsumerConfigs.put(ConsumerConfig.CLIENT_ID_CONFIG, userActionClientId);
-        hubsConsumerConfigs.put(ConsumerConfig.GROUP_ID_CONFIG, userActionGroupId);
-        hubsConsumerConfigs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        hubsConsumerConfigs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
-        hubsConsumerConfigs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, userActionValueDeserializer);
-        return new KafkaConsumer<>(hubsConsumerConfigs);
+        Properties userActionConsumerConfigs = new Properties();
+        userActionConsumerConfigs.put(ConsumerConfig.CLIENT_ID_CONFIG, userActionClientId);
+        userActionConsumerConfigs.put(ConsumerConfig.GROUP_ID_CONFIG, userActionGroupId);
+        userActionConsumerConfigs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        userActionConsumerConfigs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
+        userActionConsumerConfigs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, userActionValueDeserializer);
+        return new KafkaConsumer<>(userActionConsumerConfigs);
     }
 
 }

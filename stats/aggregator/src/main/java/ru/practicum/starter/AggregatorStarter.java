@@ -12,6 +12,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
@@ -24,13 +25,16 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static ru.practicum.serializer.AggregatorTopics.EVENT_SIMILARITY;
-import static ru.practicum.serializer.AggregatorTopics.USER_TOPIC;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class AggregatorStarter {
+
+    @Value("${aggregator.kafka.consumer.topic}")
+    private String userActionTopic;
+
+    @Value("${aggregator.kafka.producer.topic}")
+    private String eventSimilarityTopic;
 
     private final AggregatorService aggregatorService;
     private final KafkaProducer<String, SpecificRecordBase> producer;
@@ -43,12 +47,12 @@ public class AggregatorStarter {
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
         try {
-            consumer.subscribe(List.of(USER_TOPIC));
-            log.info("Агрегатор подписался на топик " + USER_TOPIC);
+            consumer.subscribe(List.of(userActionTopic));
+            log.info("Агрегатор подписался на топик " + userActionTopic);
 
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(5000));
-                log.info("Получены " + records.count() + " записей о действиях пользователей из топика " + USER_TOPIC);
+                log.info("Получены " + records.count() + " записей о действиях пользователей из топика " + userActionTopic);
                 int count = 0;
 
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
@@ -57,7 +61,7 @@ public class AggregatorStarter {
                     List<EventSimilarityAvro> eventSimilarities = aggregatorService.createEventSimilarityMessages(userAction);
                     log.info("Сообщения о сходствах мероприятий сформированы");
                     for (EventSimilarityAvro eventSimilarity : eventSimilarities) {
-                        sendToKafka(EVENT_SIMILARITY, "" + eventSimilarity.getEventA(), eventSimilarity);
+                        sendToKafka(eventSimilarityTopic, "" + eventSimilarity.getEventA(), eventSimilarity);
                     }
 
                     manageOffsets(record, count, consumer);

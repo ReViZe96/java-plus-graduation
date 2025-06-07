@@ -8,6 +8,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
@@ -19,13 +20,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.practicum.consumer.AnalyzerTopics.EVENT_SIMILARITY_TOPIC;
-import static ru.practicum.consumer.AnalyzerTopics.USER_TOPIC;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class СommonConsumerImpl implements CommonConsumer {
+
+    @Value("${analyzer.kafka.event-similarity-consumer.topic}")
+    private String eventSimilarityTopic;
+
+    @Value("${analyzer.kafka.user-actions-consumer.topic}")
+    private String userActionTopic;
 
     private final KafkaConsumer<String, EventSimilarityAvro> eventSimilarityConsumer;
     private final KafkaConsumer<String, UserActionAvro> userActionConsumer;
@@ -40,18 +44,18 @@ public class СommonConsumerImpl implements CommonConsumer {
     @Override
     public void start() {
         try {
-            eventSimilarityConsumer.subscribe(List.of(EVENT_SIMILARITY_TOPIC));
+            eventSimilarityConsumer.subscribe(List.of(eventSimilarityTopic));
             Runtime.getRuntime().addShutdownHook(new Thread(eventSimilarityConsumer::wakeup));
-            log.info("Анализатор подписался на топик " + EVENT_SIMILARITY_TOPIC);
+            log.info("Анализатор подписался на топик " + eventSimilarityTopic);
 
-            userActionConsumer.subscribe(List.of(USER_TOPIC));
+            userActionConsumer.subscribe(List.of(userActionTopic));
             Runtime.getRuntime().addShutdownHook(new Thread(userActionConsumer::wakeup));
-            log.info("Анализатор подписался на топик " + USER_TOPIC);
+            log.info("Анализатор подписался на топик " + userActionTopic);
 
             while (true) {
                 int eventSimilarityCount = 0;
                 ConsumerRecords<String, EventSimilarityAvro> eventSimilarityrecords = eventSimilarityConsumer.poll(Duration.ofMillis(1000));
-                log.info("Получены " + eventSimilarityrecords.count() + " записей о сходстве двух событий из топика " + EVENT_SIMILARITY_TOPIC);
+                log.info("Получены " + eventSimilarityrecords.count() + " записей о сходстве двух событий из топика " + eventSimilarityTopic);
                 for (ConsumerRecord<String, EventSimilarityAvro> record : eventSimilarityrecords) {
                     eventsSimilarityHandler.handleEventsSimilarity(record.value());
                     manageOffsetsForEventsSimilarity(record, eventSimilarityCount, eventSimilarityConsumer);
@@ -61,7 +65,7 @@ public class СommonConsumerImpl implements CommonConsumer {
 
                 int userActionCount = 0;
                 ConsumerRecords<String, UserActionAvro> userActionRecords = userActionConsumer.poll(Duration.ofMillis(1000));
-                log.info("Получены " + userActionRecords.count() + " записей о действиях пользователей из топика " + USER_TOPIC);
+                log.info("Получены " + userActionRecords.count() + " записей о действиях пользователей из топика " + userActionTopic);
                 for (ConsumerRecord<String, UserActionAvro> record : userActionRecords) {
                     userActionHandler.handleUserAction(record.value());
                     manageOffsetsForUserAction(record, userActionCount, userActionConsumer);

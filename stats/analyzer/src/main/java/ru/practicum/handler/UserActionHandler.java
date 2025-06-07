@@ -1,7 +1,9 @@
 package ru.practicum.handler;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.configuration.ScoreSettings;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 import ru.practicum.model.ActionType;
 import ru.practicum.model.UserAction;
@@ -14,6 +16,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserActionHandler {
+
+    private final ScoreSettings scoreSettings;
 
     private final UserActionRepository userActionRepository;
 
@@ -37,20 +41,22 @@ public class UserActionHandler {
         }
     }
 
-
     public double getScoreByActionType(ActionType actionType) {
         double score = 0;
         switch (actionType) {
             case VIEW:
-                score = 0.4;
+                score = scoreSettings.getView();
                 break;
             case REGISTER:
-                score = 0.8;
+                score = scoreSettings.getRegistration();
                 break;
             case LIKE:
-                score = 1.0;
+                score = scoreSettings.getLike();
                 break;
+            default:
+                throw new ValidationException("Передан некорректный тип действия пользователя.");
         }
         return score;
     }
+
 }

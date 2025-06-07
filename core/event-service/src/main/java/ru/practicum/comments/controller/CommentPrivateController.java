@@ -12,8 +12,18 @@ import ru.practicum.comments.service.CommentService;
 @RequiredArgsConstructor
 @RequestMapping(path = "/users/{userId}/comments")
 public class CommentPrivateController {
+
     private final CommentService commentService;
 
+
+    /**
+     * Добавить новый комментарий на мероприятие.
+     *
+     * @param userId        идентификатор пользователя, добавляющего комментарий
+     * @param eventId       идентификатор мероприятия, комментарий на которое добавляется
+     * @param newCommentDto представление с информацией о добавляемом комментарии
+     * @return представление только что добавленного комментария на мероприятие
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createComment(@PathVariable("userId") long userId,
@@ -22,6 +32,14 @@ public class CommentPrivateController {
         return commentService.createComment(userId, eventId, newCommentDto);
     }
 
+    /**
+     * Обновить информацию о существующем комментарии на мероприятие.
+     *
+     * @param userId           идентификатор пользователя, обновляющего комментарий
+     * @param commentId        идентификатор обновляемого комментария
+     * @param updateCommentDto представление обновляемого комментария
+     * @return представление обновленного комментария
+     */
     @PatchMapping("/{commentId}")
     public CommentDto updateComment(@PathVariable("userId") long userId,
                                     @PathVariable("commentId") long commentId,
@@ -29,9 +47,15 @@ public class CommentPrivateController {
         return commentService.updateComment(userId, commentId, updateCommentDto);
     }
 
+    /**
+     * Удалить комментарий на мероприятие.
+     *
+     * @param userId    идентификатор пользователя, удаляющего комментарий
+     * @param commentId идентификатор удаляемого комментария
+     */
     @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable("userId") long userId,
-                                    @PathVariable("commentId") long commentId) {
+                              @PathVariable("commentId") long commentId) {
         commentService.deleteComment(userId, commentId);
     }
 

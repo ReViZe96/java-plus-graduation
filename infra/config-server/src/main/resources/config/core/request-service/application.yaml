@@ -1,11 +1,15 @@
 server:
   port: 0
 
-statsServiceId: stats-server
-
 spring:
   application:
     name: request-service
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
   jpa:
     hibernate:
       ddl-auto: none
@@ -21,3 +25,9 @@ spring:
     driver-class-name: "org.postgresql.Driver"
     username: "request-db"
     password: "request_pw"
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 50
+      failureRateThreshold: 50

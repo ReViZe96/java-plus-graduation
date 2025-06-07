@@ -11,7 +11,7 @@ public class EventShortDto {
     private String annotation;
 
     private Long confirmedRequests;
-    private Long views;
+    private Double rating;
 
     private boolean paid;
 

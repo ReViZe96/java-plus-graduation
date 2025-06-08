@@ -17,7 +17,7 @@ aggregator:
       topic: stats.events-similarity.v1
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: ru.practicum.serializer.EventSimilaritySerializer
-    score:
-      view: 0.4
-      registration: 0.8
-      like: 1
+  score:
+    view: 0.4
+    registration: 0.8
+    like: 1

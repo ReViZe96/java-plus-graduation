@@ -15,12 +15,12 @@ import java.util.List;
 public interface RequestClient {
 
     /**
-     * Получение запроса на участие в конкретном событии с конкретным статусом от конкретного пользователя.
+     * Получение запроса на участие в конкретном мероприятии с конкретным статусом от конкретного пользователя.
      *
      * @param userId        идентификатор пользователя
-     * @param eventId       идентификатор события
-     * @param requestStatus требуемый статус события
-     * @return запрос на участие в событии.
+     * @param eventId       идентификатор мероприятия
+     * @param requestStatus требуемый статус мероприятия
+     * @return запрос на участие в мероприятии.
      */
     @GetMapping("/users/{userId}/events/{eventId}/requests/byStatus")
     ParticipationRequestDto findByRequesterIdAndEventIdAndStatus(@PathVariable Long userId,
@@ -28,12 +28,12 @@ public interface RequestClient {
                                                                  @RequestParam RequestStatus requestStatus);
 
     /**
-     * Получить количество запросов на участие в конкретном событии с конкретным статусом.
+     * Получить количество запросов на участие в конкретном мероприятии с конкретным статусом.
      *
      * @param userId        идентификатор пользователя
-     * @param eventId       идентификатор события
-     * @param requestStatus требуемый статус события
-     * @return количество запросов на участие в событии.
+     * @param eventId       идентификатор мероприятия
+     * @param requestStatus требуемый статус мероприятия
+     * @return количество запросов на участие в мероприятии.
      */
     @GetMapping("/users/{userId}/events/{eventId}/requestsCount")
     Long countRequestsByEventIdAndStatus(@PathVariable Long userId,
@@ -41,12 +41,12 @@ public interface RequestClient {
                                          @RequestParam RequestStatus requestStatus);
 
     /**
-     * Получить все запросы на участие в конкретных событиях с конкретным статусом.
+     * Получить все запросы на участие в конкретных мероприятиях с конкретным статусом.
      *
-     * @param idsList       список идентификаторов событий
+     * @param idsList       список идентификаторов мероприятий
      * @param userId        идентификатор пользователя
-     * @param requestStatus требуемый статус событий
-     * @return список запросов на участие в событиях.
+     * @param requestStatus требуемый статус мероприятий
+     * @return список запросов на участие в мероприятиях.
      */
     @GetMapping("/users/{userId}/events/requests")
     List<ParticipationRequestDto> findAllByEventIdInAndStatus(@RequestParam List<Long> idsList,

@@ -55,7 +55,7 @@ public class СommonConsumerImpl implements CommonConsumer {
             while (true) {
                 int eventSimilarityCount = 0;
                 ConsumerRecords<String, EventSimilarityAvro> eventSimilarityrecords = eventSimilarityConsumer.poll(Duration.ofMillis(1000));
-                log.info("Получены " + eventSimilarityrecords.count() + " записей о сходстве двух событий из топика " + eventSimilarityTopic);
+                log.info("Получены " + eventSimilarityrecords.count() + " записей о сходстве двух мероприятий из топика " + eventSimilarityTopic);
                 for (ConsumerRecord<String, EventSimilarityAvro> record : eventSimilarityrecords) {
                     eventsSimilarityHandler.handleEventsSimilarity(record.value());
                     manageOffsetsForEventsSimilarity(record, eventSimilarityCount, eventSimilarityConsumer);

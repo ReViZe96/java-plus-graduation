@@ -30,30 +30,30 @@ public class CollectorClient {
     }
 
     /**
-     * Отправить в Kafka сообщение о просмотре события пользователем.
+     * Отправить в Kafka сообщение о просмотре мероприятия пользователем.
      *
      * @param userId  идентификатор пользователя
-     * @param eventId идентификатор события
+     * @param eventId идентификатор мероприятия
      */
     public void sendView(Long userId, Long eventId) {
         sendUserAction(userId, eventId, ActionTypeProto.ACTION_VIEW);
     }
 
     /**
-     * Отправить в Kafka сообщение о регистрации пользователя на участие в событии.
+     * Отправить в Kafka сообщение о регистрации пользователя на участие в мероприятии.
      *
      * @param userId  идентификатор пользователя
-     * @param eventId идентификатор события
+     * @param eventId идентификатор мероприятия
      */
     public void sendRegistration(Long userId, Long eventId) {
         sendUserAction(userId, eventId, ActionTypeProto.ACTION_REGISTER);
     }
 
     /**
-     * Отправить в Kafka сообщение о реакции пользователя на событие (установка лайка).
+     * Отправить в Kafka сообщение о реакции пользователя на мероприятие (установка лайка).
      *
      * @param userId  идентификатор пользователя
-     * @param eventId идентификатор события
+     * @param eventId идентификатор мероприятия
      */
     public void sendLike(Long userId, Long eventId) {
         sendUserAction(userId, eventId, ActionTypeProto.ACTION_LIKE);

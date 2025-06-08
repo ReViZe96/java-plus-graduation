@@ -49,7 +49,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
         if (eventId == 0) {
-            throw new OperationForbiddenException("Передан некорректный идентификатор события");
+            throw new OperationForbiddenException("Передан некорректный идентификатор мероприятия");
         }
         if (eventClient.findByIdAndInitiatorId(eventId, userId) != null) {
             throw new InitiatorRequestException(String.format("User with id %s is initiator for event with id %s",

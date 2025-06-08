@@ -13,38 +13,38 @@ import java.util.List;
 public interface EventClient {
 
     /**
-     * Получение событий по их идентификаторам.
+     * Получение мероприятий по их идентификаторам.
      *
-     * @param ids список идентификаторов запрашиваемых событий
-     * @return список событий.
+     * @param ids список идентификаторов запрашиваемых мероприятий
+     * @return список мероприятий.
      */
     @GetMapping("/events/byIds")
     List<EventDto> getEvents(@RequestParam(required = false) List<Long> ids);
 
     /**
-     * Получение всех событий, относящихся к конкретной категории по идентификатору данной категории.
+     * Получение всех мероприятий, относящихся к конкретной категории по идентификатору данной категории.
      *
-     * @param categoryId идентификатор категории, по которой запрашиваются события
-     * @return список событий конкретной категории.
+     * @param categoryId идентификатор категории, по которой запрашиваются мероприятия
+     * @return список мероприятий конкретной категории.
      */
     @GetMapping("/events/byCategoryId/{categoryId}")
     List<EventDto> findAllByCategoryId(@PathVariable Long categoryId);
 
     /**
-     * Получение события по его идентификатору и инициатору.
+     * Получение мероприятия по его идентификатору и инициатору.
      *
-     * @param eventId идентификатор события
-     * @param userId  идентификатор инициатора события
-     * @return конкретное событие.
+     * @param eventId идентификатор мероприятия
+     * @param userId  идентификатор инициатора мероприятия
+     * @return конкретное мероприятие.
      */
     @GetMapping("/events/byId/{eventId}/andInitiatorId/{userId}")
     EventDto findByIdAndInitiatorId(@PathVariable Long eventId, @PathVariable Long userId);
 
     /**
-     * Получение всех событий, созданных конкретным пользователем.
+     * Получение всех мероприятий, созданных конкретным пользователем.
      *
      * @param initiatorId идентификатор пользователя
-     * @return список событий, созданных пользователем.
+     * @return список мероприятий, созданных пользователем.
      */
     @GetMapping("/events/all/byInitiatorId/{initiatorId}")
     List<EventDto> findAllByInitiatorId(@PathVariable Long initiatorId);

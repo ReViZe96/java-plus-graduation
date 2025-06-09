@@ -1,8 +1,6 @@
 server:
   port: 0
 
-statsServiceId: stats-server
-
 spring:
   application:
     name: category-service

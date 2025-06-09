@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.client.StatClient;
-import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.events.EventDto;
 import ru.practicum.event.dto.EntityParam;
 import ru.practicum.event.dto.EventShortDto;
@@ -24,31 +22,28 @@ import java.util.List;
 public class PublicEventController {
 
     private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    private static final String MAIN_SERVICE = "ewm-common-module";
-
     private final EventService eventService;
-    private final StatClient statClient;
 
 
     /**
-     * Получение событий с возможностью фильтрации.
-     * В выдаче - только опубликованные события.
+     * Получить мероприятие с возможностью фильтрации.
+     * В выдаче - только опубликованные мероприятия.
      * Текстовый поиск (по аннотации и подробному описанию) - без учета регистра букв.
-     * Если в запросе не указан диапазон дат [rangeStart-rangeEnd], то выгружаются события,
+     * Если в запросе не указан диапазон дат [rangeStart-rangeEnd], то выгружаются мероприятия,
      * которые происходят позже текущей даты и времени.
-     * Информация о каждом событии включает в себя количество просмотров и количество уже одобренных заявок на участие.
+     * Информация о каждом мероприятии включает в себя количество просмотров и количество уже одобренных запросов на участие.
      * Информация о том, что по эндпоинту был осуществлен и обработан запрос, сохраняется в сервисе статистики.
-     * В случае, если по заданным фильтрам не найдено ни одного события, возвращается пустой список.
+     * В случае, если по заданным фильтрам не найдено ни одного мероприятия, возвращается пустой список.
      *
-     * @param text          текст для поиска в содержимом аннотации и подробном описании события
-     * @param sort          Вариант сортировки: по дате события или по количеству просмотров
-     * @param from          количество событий, которые нужно пропустить для формирования текущего набора
-     * @param size          количество событий в наборе
+     * @param text          текст для поиска в содержимом аннотации и подробном описании мероприятия
+     * @param sort          Вариант сортировки: по дате мероприятия или по количеству просмотров
+     * @param from          количество мероприятий, которые нужно пропустить для формирования текущего набора
+     * @param size          количество мероприятий в наборе
      * @param categories    список идентификаторов категорий в которых будет вестись поиск
-     * @param rangeStart    дата и время не раньше которых должно произойти событие
-     * @param rangeEnd      дата и время не позже которых должно произойти событие
-     * @param paid          поиск только платных/бесплатных событий
-     * @param onlyAvailable только события у которых не исчерпан лимит запросов на участие
+     * @param rangeStart    дата и время не раньше которых должно произойти мероприятие
+     * @param rangeEnd      дата и время не позже которых должно произойти мероприятие
+     * @param paid          поиск только платных/бесплатных мероприятий
+     * @param onlyAvailable только мероприятия у которых не исчерпан лимит запросов на участие
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -73,56 +68,90 @@ public class PublicEventController {
         params.setPaid(paid);
         params.setOnlyAvailable(onlyAvailable);
 
-        List<EventShortDto> result = eventService.getEvents(params);
-        saveHit(request);
+        return eventService.getEvents(params);
+    }
+
+    /**
+     * Получить подробную информацию об опубликованном мероприятии по его идентификатору.
+     * Мероприятие должно быть опубликовано.
+     * Информация о мероприятии должна включать в себя количество просмотров и количество подтвержденных запросов.
+     * Информация о том, что по эндпоинту был осуществлен и обработан запрос, сохраняется в сервисе статистики.
+     *
+     * @param id id мероприятия
+     */
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventDto getEvent(@RequestHeader("X-EWM-USER-ID") long userId, @PathVariable Long id, HttpServletRequest request) {
+        EventDto result = eventService.getEvent(userId, id);
         return result;
     }
 
     /**
-     * Получение подробной информации об опубликованном событии по его идентификатору.
-     * Cобытие должно быть опубликовано.
-     * Информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов.
-     * Информация о том, что по эндпоинту был осуществлен и обработан запрос, сохраняется в сервисе статистики.
+     * Получить список мероприятий, рекомендованных пользователю, на основании его предыдущей активности.
      *
-     * @param id id события
+     * @param userId идентификатор пользователя
      */
-    @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public EventDto getEvent(@PathVariable Long id, HttpServletRequest request) {
-
-        EventDto result = eventService.getEvent(id);
-        saveHit(request);
-        return result;
+    @GetMapping("/recommendations")
+    public List<EventDto> getRecommendedEventsForUser(@RequestHeader("X-EWM-USER-ID") long userId) {
+        return eventService.getRecommendedEventsForUser(userId);
     }
 
+    /**
+     * Постановка лайка пользователем конкретному, посещенному им мероприятию.
+     *
+     * @param userId  идентификатор пользователя
+     * @param eventId идентификатор мероприятия
+     */
+    @PutMapping("/{eventId}/like")
+    public void addLikeToEvent(@RequestHeader("X-EWM-USER-ID") long userId, @PathVariable Long eventId) {
+        eventService.addLikeToEvent(userId, eventId);
+    }
+
+
+    //------------------------Внутренние эндпоинты для взаимодействия микросервисов между собой-------------------------
+
+    /**
+     * Получить список мероприятий по их идентификаторам.
+     *
+     * @param ids список идентификаторов запрашиваемых мероприятий
+     */
     @GetMapping("/byIds")
-    List<EventDto> getEvents(@RequestParam(required = false) List<Long> ids) {
+    public List<EventDto> getEvents(@RequestParam(required = false) List<Long> ids) {
         return eventService.getEvents(ids);
     }
 
+    /**
+     * Получить список мероприятий, принадлежащих конкретной категории (разделу).
+     *
+     * @param categoryId идентификатор категории (раздела), мероприятия из которой запрашиваются
+     * @return список мероприятий конкретной категории (раздела)
+     */
     @GetMapping("/byCategoryId/{categoryId}")
-    List<EventDto> findAllByCategoryId(@PathVariable Long categoryId) {
+    public List<EventDto> findAllByCategoryId(@PathVariable Long categoryId) {
         return eventService.findAllByCategoryId(categoryId);
     }
 
+    /**
+     * Получить конкретное мероприятие по его идентификатору и идентификатору создателя данного мероприятия.
+     *
+     * @param eventId идентификатор мероприятия
+     * @param userId  идентификатор пользователя, создавшего запрашиваемое мероприятие
+     * @return представление запрошенного мероприятия
+     */
     @GetMapping("/byId/{eventId}/andInitiatorId/{userId}")
-    EventDto findByIdAndInitiatorId(@PathVariable Long eventId, @PathVariable Long userId) {
+    public EventDto findByIdAndInitiatorId(@PathVariable Long eventId, @PathVariable Long userId) {
         return eventService.findByIdAndInitiatorId(eventId, userId);
     }
 
+    /**
+     * Получить список всех мероприятий, созданных конкретным польователем.
+     *
+     * @param initiatorId идентификатор пользователя, создавшего запрашиваемые мероприятия
+     * @return список всех мероприятий конкретного пользователя
+     */
     @GetMapping("/all/byInitiatorId/{initiatorId}")
-    List<EventDto> findAllByInitiatorId(@PathVariable Long initiatorId) {
+    public List<EventDto> findAllByInitiatorId(@PathVariable Long initiatorId) {
         return eventService.findAllByInitiatorId(initiatorId);
-    }
-
-
-    private void saveHit(HttpServletRequest request) {
-        EndpointHitDto endpointHitDto = new EndpointHitDto();
-        endpointHitDto.setApp(MAIN_SERVICE);
-        endpointHitDto.setUri(request.getRequestURI());
-        endpointHitDto.setIp(request.getRemoteAddr());
-        endpointHitDto.setTimestamp(LocalDateTime.now());
-        statClient.saveHit(endpointHitDto);
     }
 
 }

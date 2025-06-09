@@ -3,6 +3,7 @@ package ru.practicum.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.client.CollectorClient;
 import ru.practicum.client.EventClient;
 import ru.practicum.client.UserClient;
 import ru.practicum.dto.EventRequestStatusUpdateRequest;
@@ -28,6 +29,7 @@ public class RequestServiceImpl implements RequestService {
 
     private final UserClient userClient;
     private final EventClient eventClient;
+    private final CollectorClient collectorClient;
     private final RequestRepository requestRepository;
 
     private final RequestMapper requestMapper;
@@ -46,6 +48,9 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
+        if (eventId == 0) {
+            throw new OperationForbiddenException("Передан некорректный идентификатор мероприятия");
+        }
         if (eventClient.findByIdAndInitiatorId(eventId, userId) != null) {
             throw new InitiatorRequestException(String.format("User with id %s is initiator for event with id %s",
                     userId, eventId));
@@ -66,7 +71,7 @@ public class RequestServiceImpl implements RequestService {
         request.setEventId(events.get(0).getId());
 
         Long confirmedRequestsAmount = requestRepository.countRequestsByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-        if (events.get(0).getParticipantLimit() <= confirmedRequestsAmount && events.get(0).getParticipantLimit() != 0) {
+        if (events.get(0).getParticipantLimit() <= events.get(0).getConfirmedRequests() && events.get(0).getParticipantLimit() != 0) {
             throw new ParticipantLimitException(String.format("Participant limit for event with id %s id exceeded", eventId));
         }
 
@@ -84,6 +89,8 @@ public class RequestServiceImpl implements RequestService {
             request.setStatus(RequestStatus.CONFIRMED);
             request.setCreatedOn(LocalDateTime.now());
         }
+
+        collectorClient.sendRegistration(userId, eventId);
         return requestMapper.requestToParticipationRequestDto(requestRepository.save(request));
     }
 
